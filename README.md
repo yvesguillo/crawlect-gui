@@ -1,5 +1,5 @@
 # Crawlect-GUI
-**Java Swing GUI for [Crawlect](https://github com/yvesguillo/crawlect).**
+**Java Swing GUI for [Crawlect](https://github.com/yvesguillo/crawlect).**
 
 ## Overview
 
