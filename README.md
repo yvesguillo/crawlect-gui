@@ -5,7 +5,7 @@
 
 ### Purpose
 
-Provide a desktop GUI to run Crawlect with no CLI knowledge required.
+Provide a desktop GUI to enhance Crawlect use flow.
 
 ### Technologies
 
@@ -27,7 +27,6 @@ Java Swing (frontend), Python (backend via Crawlect), optional installer.
 - Install Crawlect via pip into venv.
 - Execute Crawlect inside the venv.
 
-
 ## Installer & Packaging
 
 - Use jpackage or Inno Setup to:
@@ -40,7 +39,8 @@ Java Swing (frontend), Python (backend via Crawlect), optional installer.
 - Clean installation (no global Python dependencies).
 - Informative logs and error handling.
 - Option to reset or reinstall Crawlect backend.
-- Allow several analysis with over several tabs.
+- Allow several analysis over several tabs.
 - Global and analysis tab scope paramèters
 - In-analysis-tab related .crawlectignore creation / edition.
 - Settings backup, both general and path related
+- [FlatLaf](https://github.com/JFormDesigner/FlatLaf) theme
