@@ -69,25 +69,25 @@ This prototype lays the groundwork for a scalable, user-friendly interface to *C
 ### Scope
 
 1. **Assume all dependencies are installed.**
-    - Don’t deal with venv, pip, or installers yet.
-    - Just call crawlect as a subprocess.
-    - If crawlect fails (e.g., not found), catch the error and show it inside an embedded console area
-      (JTextArea, read-only; (Optionally) add contextual coloring to the output for improved readability).
-    - Centralize the subprocess logic in `CrawlectExecutor` helper class.
+      - Don’t deal with venv, pip, or installers yet.
+      - Just call crawlect as a subprocess.
+      - If crawlect fails (e.g., not found), catch the error and show it inside an embedded console area
+        (JTextArea, read-only; (Optionally) add contextual coloring to the output for improved readability).
+      - Centralize the subprocess logic in `CrawlectExecutor` helper class.
 2. **Call `crawlect --help` to introspect parameters.**
-  - `crawlect --help` returns *argparse* structured info.
-  - Parse with regex or line-based logic.
-  - Autogenerate checkboxes, sliders, or fields for CLI flags.
-  - Centralize the help parsing logic in `CrawlectHelpParser` class.
+    - `crawlect --help` returns *argparse* structured info.
+    - Parse with regex or line-based logic.
+    - Autogenerate checkboxes, sliders, or fields for CLI flags.
+    - Centralize the help parsing logic in `CrawlectHelpParser` class.
 3. **Execute Crawlect based on user selections.**
-  - Let the user:
-    - Select a directory (JFileChooser).
-    - Set output path.
-    - Choose a few basic flags manually (for now, hardcode them or provide text input).
-  - Build the command line.
-  - Run crawlect with the provided args.
-  - Pipe the output to the console window in real time.
-  - Centralize the command builder logic in `CrawlectCommandBuilder` class.
+    - Let the user:
+      - Select a directory (JFileChooser).
+      - Set output path.
+      - Choose a few basic flags manually (for now, hardcode them or provide text input).
+    - Build the command line.
+    - Run crawlect with the provided args.
+    - Pipe the output to the console window in real time.
+    - Centralize the command builder logic in `CrawlectCommandBuilder` class.
 
 ### Structure
 
@@ -122,4 +122,4 @@ src/
 (TBD)
 
 If you find Crawlect-GUI useful, **give it a ☆** to support the project!  
-![GitHub Repo stars](https://img.shields.io/github/stars/yvesguillo/crawlect-gui?style=social)
+[![GitHub Repo stars](https://img.shields.io/github/stars/yvesguillo/crawlect-gui?style=social)](#)
