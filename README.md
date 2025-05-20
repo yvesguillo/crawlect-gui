@@ -1,6 +1,6 @@
 # Crawlect-GUI
 
-**Java Swing GUI for [Crawlect](https://github.com/yvesguillo/crawlect)**
+**Java Swing GUI for [*Crawlect*](https://github.com/yvesguillo/crawlect)**
 
 ## Why Crawlect-GUI?
 
@@ -11,37 +11,40 @@ Enhance Crawlect’s accessibility by providing a GUI that simplifies trying, ch
 ## Use cases
 
 (TBD)
+- Learning (TBD)
+- Trouble-shooting (TBD)
+- Comparing (TBD)
+(TBD)
 
 ## Overview
 
 ### Technologies
 
-- **Frontend**: Java Swing (with [FlatLaf](https://github.com/JFormDesigner/FlatLaf) for modern UI).
-- **Backend**: Python (running Crawlect inside a virtual environment).
-- **Installer**: Optional (via `jpackage` or `Inno Setup`).
+- **Frontend**: Java Swing with [`FlatLaf`](https://github.com/JFormDesigner/FlatLaf)
+- **Backend**: Python Crawlect CLI app via [`Runtime`](https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Runtime.html#getRuntime()) class.
+- **Installer**: via [`jpackage`](https://docs.oracle.com/en/java/javase/24/docs/specs/man/jpackage.html).
 
 ### Core Features
 
 - Select folder to crawl.
 - Configure output file name and destination.
+- Set variable parameters such as `--llm-model` or `--llm-api-key`…
+- Toggle Crawlect flag parameters such as `--depth`, `--gitignore`…
 - Trigger Crawlect execution from GUI.
-- Display stdout/stderr logs in real-time (output area).
-- Toggle Crawlect flag parameters (e.g. `--depth`, `--gitignore`, etc.).
-- Graceful error handling and user-friendly messaging.
+- Display stdout/stderr logs in real-time in an embedded console.
 
 ### Backend Integration
 
 - Check if Python is installed (`python --version`)
-- If not installed, prompt  user or provide install instructions.
-- Create a local **Python virtual environment** (in-app folder or user-path).
-- Install Crawlect via `pip install crawlect` inside the `venv`.
-- Execute Crawlect inside the `venv` for each analysis request.
+  - If not installed, prompt user, provide install instructions or:
+    - Create a local **Python virtual environment** (in-app folder or user-path).
+    - Install Crawlect via `pip install crawlect` inside the `venv`.
 - Parse available *Crawlect* parameters from `crawlect --help` output.
+- Execute Crawlect analysis request.
 
 ### Installer & Packaging
 
 - Use **`jpackage`** (cross-platform) or **Inno Setup** (Windows) to:
-
   - Bundle the Java app.
   - Optionally include the JRE.
   - Launch first-run logic to:
@@ -60,7 +63,7 @@ Enhance Crawlect’s accessibility by providing a GUI that simplifies trying, ch
   - Global app settings.
   - Per-path defaults and recent configurations.
 - Consistent UI/UX using FlatLaf theme (light/dark toggle optional).
-- Toggle show/Hide embed console.
+- Toggle show/Hide embeded console.
 
 ## Prototype Scope
 
@@ -86,7 +89,7 @@ This prototype lays the groundwork for a scalable, user-friendly interface to *C
       - Choose a few basic flags manually (for now, hardcode them or provide text input).
     - Build the command line.
     - Run crawlect with the provided args.
-    - Pipe the output to the console window in real time.
+    - Pipe the output to the embedded console in real time.
     - Centralize the command builder logic in `CrawlectCommandBuilder` class.
 
 ### Structure
@@ -114,7 +117,7 @@ src/
 - Embedded `.crawlectignore` editor.
 - Auto-setup venv and pip if Crawlect not found.
 - Tabbed interface with progress bars.
-- Theme toggle (FlatLaf dark/light).
+- Theme toggle (FlatLaf dark/light and/or OS seting level).
 - Output preview inside the GUI (Markdown).
 
 ## References and thanks
