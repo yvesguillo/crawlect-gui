@@ -10,11 +10,59 @@ Enhance Crawlect’s accessibility by providing a GUI that simplifies trying, ch
 
 ## Use cases
 
-(TBD)
-- Learning (TBD)
-- Trouble-shooting (TBD)
-- Comparing (TBD)
-(TBD)
+- **Learning & Exploration**  
+  *A student wants to understand the structure and logic of an unfamiliar codebase.*  
+  Launch Crawlect-GUI, select the project folder, and generate a Markdown summary to explore files, syntax, and logic flow.  
+  Main features:  
+
+
+
+- **Legacy Code Analysis**  
+  *A developer inherits a large, outdated codebase with no clear documentation.*  
+  Launch Crawlect-GUI to generate an overview of the structure, identify obsolete files, and spot inconsistencies.  
+  Main features:  
+    - Custom file filters (e.g. show `.bak`, `.tmp`, or unused files)
+    - Auto-tagging large, orphaned files or TODOs
+    - Visual stats (files per folder, total size…)
+
+
+- **Onboarding New Team Members**  
+  *A new hire needs to get familiar with the company’s software projects.*  
+  Explore multiple codebases, browse generated Markdown overviews, and customize outputs to match learning style, reducing ramp-up time.  
+  Main features:  
+    - Save/load presets (e.g. “Frontend onboarding” vs “Data pipeline overview”)
+    - Possibly export analysis as a PDF or shareable doc
+
+
+- **Troubleshooting & Debugging**  
+  *A team member needs to check if ignored files or wrong extensions are causing issues.*  
+  Quickly rerun the analysis with different `.crawlectignore` or flag parameters, tweaking depth or file types to isolate the problem, all from a single window.  
+  Main features:  
+    (TBD)
+
+
+- **Comparative Analysis**  
+  *A lead developer wants to compare two branches of a repo or two folders for changes in structure.*  
+  Open two tabs in Crawlect-GUI, run separate analyses, and export the outputs for side-by-side comparison, making it easy to detect file additions or refactoring.  
+  Main features:  
+    (TBD)
+
+
+- **Refactoring Preparation**  
+  *A tech lead wants to clean up a monolithic module before a big refactoring.*  
+  Run Crawlect-GUI with different scopes and parameters to isolate the most complex or deeply nested parts, using the generated overview to plan restructuring.  
+  Main features:  
+    - Add file sorting or depth display
+    - Possibly visualize path trees or identify "hot zones" (large/deep file trees)
+
+
+- **Documentation Assistance**  
+  *A tech writer needs to update the architecture documentation of a project.*  
+  Launch Crawlect-GUI to generate a Markdown snapshot of the codebase and integrate it directly into writing tools.  
+  Main features:  
+    (TBD)
+
+
 
 ## Overview
 
