@@ -14,55 +14,59 @@ Enhance Crawlect’s accessibility by providing a GUI that simplifies trying, ch
   *A student wants to understand the structure and logic of an unfamiliar codebase.*  
   Launch Crawlect-GUI, select the project folder, and generate a Markdown summary to explore files, syntax, and logic flow.  
   Main features:  
-
-
+    - Simple folder selection with `JFileChooser`
+    - Output preview in embedded console or external viewer
+    - FlatLaf visual theme for easy reading
+    - Flag auto-fill or tooltips for helping discover CLI options
 
 - **Legacy Code Analysis**  
   *A developer inherits a large, outdated codebase with no clear documentation.*  
   Launch Crawlect-GUI to generate an overview of the structure, identify obsolete files, and spot inconsistencies.  
   Main features:  
     - Custom file filters (e.g. show `.bak`, `.tmp`, or unused files)
-    - Auto-tagging large, orphaned files or TODOs
-    - Visual stats (files per folder, total size…)
-
 
 - **Onboarding New Team Members**  
   *A new hire needs to get familiar with the company’s software projects.*  
   Explore multiple codebases, browse generated Markdown overviews, and customize outputs to match learning style, reducing ramp-up time.  
   Main features:  
-    - Save/load presets (e.g. “Frontend onboarding” vs “Data pipeline overview”)
-    - Possibly export analysis as a PDF or shareable doc
-
+    - Save/load analysis presets
+    - FlatLaf light/dark theme toggle
+    - Markdown export button to open/save results
 
 - **Troubleshooting & Debugging**  
   *A team member needs to check if ignored files or wrong extensions are causing issues.*  
   Quickly rerun the analysis with different `.crawlectignore` or flag parameters, tweaking depth or file types to isolate the problem, all from a single window.  
   Main features:  
-    (TBD)
-
+    - Embedded `.crawlectignore` editor (multi-line text area)
+    - Flag toggles for `--depth`, `--gitignore`, etc.
+    - Embedded console showing warnings/errors in real-time
+    - Button to quickly rerun last analysis with changed settings
 
 - **Comparative Analysis**  
   *A lead developer wants to compare two branches of a repo or two folders for changes in structure.*  
   Open two tabs in Crawlect-GUI, run separate analyses, and export the outputs for side-by-side comparison, making it easy to detect file additions or refactoring.  
   Main features:  
-    (TBD)
-
+    - Multi-tab interface (per analysis)
+    - Independent per-tab input parameters and output
+    - Markdown output saving per tab
+    - Optional: “Sync settings across tabs” toggle
 
 - **Refactoring Preparation**  
   *A tech lead wants to clean up a monolithic module before a big refactoring.*  
   Run Crawlect-GUI with different scopes and parameters to isolate the most complex or deeply nested parts, using the generated overview to plan restructuring.  
   Main features:  
-    - Add file sorting or depth display
-    - Possibly visualize path trees or identify "hot zones" (large/deep file trees)
-
+    - Dropdown to set max depth or scope
+    - Filter view by file type or size (optional feature)
+    - Export-to-Markdown with customized output path
 
 - **Documentation Assistance**  
   *A tech writer needs to update the architecture documentation of a project.*  
   Launch Crawlect-GUI to generate a Markdown snapshot of the codebase and integrate it directly into writing tools.  
   Main features:  
-    (TBD)
-
-
+    - GUI field to set custom output path/name
+    - "Open output in viewer" button after generation
+    - Export presets for documentation (e.g. skip temp folders)
+    - Minimal view mode (hide advanced flags to reduce clutter)
 
 ## Overview
 
