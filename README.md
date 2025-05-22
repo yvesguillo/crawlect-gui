@@ -124,7 +124,7 @@ Crawlect-GUI provides a user-friendly graphical interface to run and customize [
 
 
 ## **GUI module assignment project scope**
-**(Prototype to be delivere on the 17^th^ of April 2025)**
+**(Prototype to be delivere on the 17<sup>th</sup> of April 2025)**
 
 This prototype lays the groundwork for a scalable, user-friendly interface to *Crawlect*, ready to grow with future needs.
 
@@ -151,6 +151,20 @@ This prototype lays the groundwork for a scalable, user-friendly interface to *C
     - Pipe the output to the embedded console in real time.
     - Centralize the command builder logic in `CrawlectCommandBuilder` class.
 
+### Structure
+
+```text
+src/
+├─ gui/
+│  ├─ MainFrame.java                      # JFrame + layout
+│  └─ ConsolePanel.java                   # JTextArea wrapper
+├─ logic/
+│  ├─ CrawlectExecutor.java               # Runs commands, handles stdout/stderr
+│  ├─ CrawlectHelpParser.java (optional)  # Parses --help
+│  └─ CrawlectCommandBuilder.java         # Builds final CLI command
+└─ CrawlectGuiApp.java                    # Main class
+```
+
 #### Related issues
 
 | issue | Description |
@@ -176,20 +190,6 @@ This prototype lays the groundwork for a scalable, user-friendly interface to *C
 | Apr 05–06 | Output & Logging | #6, #16 |
 | Apr 07–10 | Polish & Buffer Phase | final tests |
 | Apr 10–17 | Presentation material | communication |
-
-### Structure
-
-```text
-src/
-├─ gui/
-│  ├─ MainFrame.java                      # JFrame + layout
-│  └─ ConsolePanel.java                   # JTextArea wrapper
-├─ logic/
-│  ├─ CrawlectExecutor.java               # Runs commands, handles stdout/stderr
-│  ├─ CrawlectHelpParser.java (optional)  # Parses --help
-│  └─ CrawlectCommandBuilder.java         # Builds final CLI command
-└─ CrawlectGuiApp.java                    # Main class
-```
 
 ## Getting Started
 
