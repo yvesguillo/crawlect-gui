@@ -1,0 +1,254 @@
+[
+  {
+    "group": "Core Parameters",
+    "flags": [
+      "-p",
+      "--path"
+    ],
+    "type": "str",
+    "choices": [],
+    "default": ".",
+    "required": false,
+    "metavar": "path",
+    "help": "Path to crawl (default: '.')."
+  },
+  {
+    "group": "Core Parameters",
+    "flags": [
+      "-o",
+      "--output"
+    ],
+    "type": "str",
+    "choices": [],
+    "default": "",
+    "required": false,
+    "metavar": "output",
+    "help": "Output file path (e.g. './digest.md')."
+  },
+  {
+    "group": "Core Parameters",
+    "flags": [
+      "-op",
+      "--output-prefix"
+    ],
+    "type": "str",
+    "choices": [],
+    "default": "",
+    "required": false,
+    "metavar": "prefix",
+    "help": "Prefix for dynamic output filename (e.g. './digest')."
+  },
+  {
+    "group": "Core Parameters",
+    "flags": [
+      "-os",
+      "--output-suffix"
+    ],
+    "type": "str",
+    "choices": [],
+    "default": ".md",
+    "required": false,
+    "metavar": "suffix",
+    "help": "Suffix for dynamic filename (e.g. '.md')."
+  },
+  {
+    "group": "Crawling Options",
+    "flags": [
+      "--recur",
+      "--no-recur"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "True",
+    "required": false,
+    "metavar": "recur",
+    "help": "Enable recursive crawling (default: enabled)."
+  },
+  {
+    "group": "Crawling Options",
+    "flags": [
+      "-d",
+      "--depth"
+    ],
+    "type": "int",
+    "choices": [],
+    "default": "inf",
+    "required": false,
+    "metavar": "depth",
+    "help": "Maximum scan depth (default: infinity)."
+  },
+  {
+    "group": "Crawling Options",
+    "flags": [
+      "--crawlig",
+      "--no-crawlig"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "True",
+    "required": false,
+    "metavar": "crawlig",
+    "help": "Use `.crawlectignore` rules (default: enabled)."
+  },
+  {
+    "group": "Crawling Options",
+    "flags": [
+      "--gitig",
+      "--no-gitig"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "True",
+    "required": false,
+    "metavar": "gitig",
+    "help": "Use `.gitignore` rules (default: enabled)."
+  },
+  {
+    "group": "Crawling Options",
+    "flags": [
+      "--dockig",
+      "--no-dockig"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "True",
+    "required": false,
+    "metavar": "dockig",
+    "help": "Use `.dockerignore` rules (default: enabled)."
+  },
+  {
+    "group": "Output Formatting",
+    "flags": [
+      "--xenv",
+      "--no-xenv"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "True",
+    "required": false,
+    "metavar": "xenv",
+    "help": "Sanitize `.env` values (default: enabled)."
+  },
+  {
+    "group": "Output Formatting",
+    "flags": [
+      "--tree",
+      "--no-tree"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "True",
+    "required": false,
+    "metavar": "tree",
+    "help": "Include file tree structure (default: enabled)."
+  },
+  {
+    "group": "LLM Options",
+    "flags": [
+      "-llmapi",
+      "--llm-api"
+    ],
+    "type": "",
+    "choices": [
+      "openai",
+      "ollama"
+    ],
+    "default": "",
+    "required": false,
+    "metavar": "api",
+    "help": "LLM provider ('openai' | 'ollama')."
+  },
+  {
+    "group": "LLM Options",
+    "flags": [
+      "-llmhost",
+      "--llm-host"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "",
+    "required": false,
+    "metavar": "host",
+    "help": "LLM host URL (Ollama only)."
+  },
+  {
+    "group": "LLM Options",
+    "flags": [
+      "-llmkey",
+      "--llm-api-key"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "",
+    "required": false,
+    "metavar": "key",
+    "help": "LLM API key (OpenAI only)."
+  },
+  {
+    "group": "LLM Options",
+    "flags": [
+      "-llmmod",
+      "--llm-model"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "",
+    "required": false,
+    "metavar": "model",
+    "help": "Model name."
+  },
+  {
+    "group": "LLM Options",
+    "flags": [
+      "-llmreq",
+      "--llm-request"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "",
+    "required": false,
+    "metavar": "request",
+    "help": "LLM tasks list to perform."
+  },
+  {
+    "group": "LLM Options",
+    "flags": [
+      "-llmcust",
+      "--llm-custom-requests"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "",
+    "required": false,
+    "metavar": "requests",
+    "help": "Custom LLM prompts list."
+  },
+  {
+    "group": "User Experience",
+    "flags": [
+      "-verbose",
+      "--verbose",
+      "--no-verbose"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "True",
+    "required": false,
+    "metavar": "verbose",
+    "help": "Toggle verbosity (default: enabled)."
+  },
+  {
+    "group": "User Experience",
+    "flags": [
+      "-open",
+      "--open",
+      "--no-open"
+    ],
+    "type": "",
+    "choices": [],
+    "default": "False",
+    "required": false,
+    "metavar": "open",
+    "help": "Open output after generation (default: disabled)."
+  }
+]

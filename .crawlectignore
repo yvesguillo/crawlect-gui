@@ -1,0 +1,6 @@
+# This is an example of .crawlectignore file.
+# It is interpreted as a .gitignore would.
+# It is processed by Crawlect using [`gitignore_parser`](https://github.com/mherrmann/gitignore_parser) by [Michael Herrmann](https://github.com/mherrmann/).
+
+# Ignore Markdown documentation files
+README.md

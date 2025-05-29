@@ -156,9 +156,11 @@ This prototype lays the groundwork for a scalable, user-friendly interface to *C
 ```text
 src/
 ├─ gui/
-│  ├─ MainFrame.java                      # JFrame + layout
+│  ├─ MainWindow.java                     # JFrame + layout
 │  └─ ConsolePanel.java                   # JTextArea wrapper
 ├─ logic/
+│  ├─ CliOption.java                      # Standard Python Argpars converter
+│  ├─ CliSchemaParser.java                # Translate Crawlect CLI options JSON
 │  ├─ CrawlectExecutor.java               # Runs commands, handles stdout/stderr
 │  ├─ CrawlectHelpParser.java (optional)  # Parses --help
 │  └─ CrawlectCommandBuilder.java         # Builds final CLI command

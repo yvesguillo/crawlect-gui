@@ -1,0 +1,16 @@
+# Environment files
+*.env
+
+# Mac / Windows / Editor stuff
+.DS_Store
+Thumbs.db
+*.swp
+
+# Personal notes and analysis
+*.memo
+
+# Builds
+target/
+
+# IDE
+.idea/
