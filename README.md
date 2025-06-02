@@ -194,7 +194,18 @@ src/
 
 ## Getting Started
 
-(TBD)
+Rebuild:
+```bash
+mvn clean compile
+```
+Test:
+```bash
+mvn exec:java
+```
+OR specify annother entry point than the one set in the `pom.xml`.
+```bash
+mvn exec:java -Dexec.mainClass="ch.yvesguillo.AnnotherMainClass"
+```
 
 ## Roadmap & Crazy Ideas
 
