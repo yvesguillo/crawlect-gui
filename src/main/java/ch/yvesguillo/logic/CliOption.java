@@ -16,7 +16,7 @@ public class CliOption {
     @JsonProperty("default")
     public String defaultValue;
 
-    // Derived fields
+    // Derived fields.
     public boolean isBoolean;
     public boolean hasChoices;
 
