@@ -162,7 +162,6 @@ src/
 │  ├─ CliOption.java                      # Standard Python Argpars converter
 │  ├─ CliSchemaParser.java                # Translate Crawlect CLI options JSON
 │  ├─ CrawlectExecutor.java               # Runs commands, handles stdout/stderr
-│  ├─ CrawlectHelpParser.java (optional)  # Parses --help
 │  └─ CrawlectCommandBuilder.java         # Builds final CLI command
 └─ CrawlectGuiApp.java                    # Main class
 ```

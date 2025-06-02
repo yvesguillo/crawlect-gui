@@ -6,6 +6,7 @@ import ch.yvesguillo.logic.PythonRunner;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.*;
 import java.util.List;
 
@@ -196,6 +197,15 @@ public class MainWindow extends JFrame {
                     String outputPath = command.get(i + 1);
                     java.io.File outputFile = new java.io.File(outputPath);
 
+                    File parentDir = outputFile.getParentFile();
+                    if (parentDir != null && (!parentDir.exists() || !parentDir.canWrite())) {
+                        JOptionPane.showMessageDialog(this,
+                                "Cannot write to the output directory:\n" + parentDir.getAbsolutePath(),
+                                "Output Path Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return null;
+                    }
+
                     if (outputFile.exists()) {
                         int choice = JOptionPane.showOptionDialog(this,
                                 "The file '" + outputFile.getName() + "' already exists.\nWhat would you like to do?",
@@ -297,6 +307,22 @@ public class MainWindow extends JFrame {
             String outputCheck = handleOutputFileOverwrite(args);
             if (outputCheck == null) {
                 return; // User cancelled.
+            }
+
+            // Check if path exists (for --path or -p)
+            for (int i = 0; i < args.size(); i++) {
+                String flag = args.get(i);
+                if ((flag.equals("--path") || flag.equals("-p")) && i + 1 < args.size()) {
+                    String pathStr = args.get(i + 1);
+                    java.io.File path = new java.io.File(pathStr);
+                    if (!path.exists() || !path.isDirectory()) {
+                        JOptionPane.showMessageDialog(this,
+                                "The selected path to scan does not exist or is not a directory:\n" + pathStr,
+                                "Invalid Path to Scan",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
             }
 
             String output = PythonRunner.runCrawlect(args);
