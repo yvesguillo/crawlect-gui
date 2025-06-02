@@ -23,7 +23,7 @@ public class CliOption {
     public CliOption() {}
 
     public void postProcess() {
-        this.isBoolean = (flags.stream().anyMatch(f -> f.startsWith("--no-")) || type.isEmpty());
+        this.isBoolean = (flags.stream().anyMatch(f -> f.startsWith("--no-")));
         this.hasChoices = (choices != null && !choices.isEmpty());
     }
 
@@ -31,6 +31,16 @@ public class CliOption {
         return flags.stream().filter(f -> f.startsWith("--")).findFirst().orElse(flags.get(0));
     }
 
+    public String getNegativeFlag() {
+        for (String flag : flags) {
+            if (flag.startsWith("--no-")) {
+                return flag;
+            }
+        }
+        return null; // Optional: fallback
+    }
+
+    // I'm feeling that we may need it later.
     public String getShortFlag() {
         return flags.stream().filter(f -> f.startsWith("-") && !f.startsWith("--")).findFirst().orElse("");
     }

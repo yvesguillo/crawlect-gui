@@ -62,6 +62,9 @@ public class PythonRunner {
         command.add("crawlect");
         command.addAll(args);
 
+        // Debbug.
+        System.out.println("Executing: " + String.join(" ", command));
+
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.redirectErrorStream(true);
         Process process = pb.start();

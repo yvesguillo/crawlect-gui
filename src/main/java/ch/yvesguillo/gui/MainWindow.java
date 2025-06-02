@@ -6,10 +6,8 @@ import ch.yvesguillo.logic.PythonRunner;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class MainWindow extends JFrame {
 
@@ -17,7 +15,12 @@ public class MainWindow extends JFrame {
     private final DefaultListModel<String> groupListModel;
     private final JPanel optionPanel;
 
+    // Style.
+    private static final Font mainFont = UIManager.getFont("Label.font").deriveFont(12f);
+    private static final Font heavyFont = UIManager.getFont("Label.font").deriveFont(Font.BOLD, 14f);
+
     private final Map<CliOption, JComponent> inputMap = new HashMap<>();
+    private final Map<CliOption, Object> storedValues = new HashMap<>(); // Cache values when refreshing option panel for input persistance.
 
     private final String projectName;
     private final String projectVersion;
@@ -41,22 +44,72 @@ public class MainWindow extends JFrame {
         groupList = new JList<>(groupListModel);
         groupList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         groupList.setSelectedIndex(0);
-        groupList.setFont(new Font("Roboto", Font.PLAIN, 12));
+        groupList.setFont(mainFont);
         groupList.addListSelectionListener(e -> updateOptionPanel(groupList.getSelectedValue()));
 
         JScrollPane groupScroll = new JScrollPane(groupList);
         groupScroll.setPreferredSize(new Dimension(250, 600));
         add(groupScroll, BorderLayout.WEST);
 
+        // Add a Run button.
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(groupScroll, BorderLayout.CENTER);
+
+        JButton runButton = new JButton("Run Crawlect ▶");
+        runButton.setFont(heavyFont);
+        runButton.setPreferredSize(new Dimension(250, 40));
+        runButton.addActionListener(event -> runCrawlectCommand());
+        leftPanel.add(runButton, BorderLayout.SOUTH);
+
+        add(leftPanel, BorderLayout.WEST);
+
         optionPanel = new JPanel();
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.Y_AXIS));
-        JScrollPane optionScroll = new JScrollPane(optionPanel);
+        optionPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.add(optionPanel, BorderLayout.NORTH); // Forces top alignment.
+        JScrollPane optionScroll = new JScrollPane(wrapper);
         add(optionScroll, BorderLayout.CENTER);
 
         updateOptionPanel(groupList.getSelectedValue());
     }
 
+    public class ComboItem {
+        private final String label;
+        private final String value;
+
+        public ComboItem(String label, String value) {
+            this.label = label;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return label; // What gets displayed in the combo box.
+        }
+    }
+
     private void updateOptionPanel(String group) {
+        // Save current input values before clearing
+        for (Map.Entry<CliOption, JComponent> entry : inputMap.entrySet()) {
+            CliOption option = entry.getKey();
+            JComponent field = entry.getValue();
+
+            if (option.isBoolean && field instanceof JCheckBox check) {
+                storedValues.put(option, check.isSelected());
+            } else if (option.hasChoices && field instanceof JComboBox<?> combo) {
+                Object selectedItem = combo.getSelectedItem();
+                if (selectedItem instanceof ComboItem item) {
+                    storedValues.put(option, item.getValue());
+                }
+            } else if (field instanceof JTextField text) {
+                storedValues.put(option, text.getText());
+            }
+        }
         optionPanel.removeAll();
         inputMap.clear();
 
@@ -71,26 +124,52 @@ public class MainWindow extends JFrame {
 
         int row = 0;
         for (CliOption option : groupOptions) {
-            JLabel label = new JLabel(option.getPrimaryFlag());
+            JLabel label = new JLabel(String.format("%-20s", option.getPrimaryFlag())); // Padding.
+            label.setPreferredSize(new Dimension(160, 25)); // Fixed width.
+            label.setFont(mainFont);
             label.setToolTipText(option.help);
 
             JComponent inputField;
 
             if (option.isBoolean) {
                 JCheckBox checkBox = new JCheckBox();
-                checkBox.setSelected("true".equalsIgnoreCase(option.defaultValue));
+                Boolean saved = (Boolean) storedValues.get(option);
+                checkBox.setSelected(saved != null ? saved : "true".equalsIgnoreCase(option.defaultValue));
                 inputField = checkBox;
             } else if (option.hasChoices) {
-                JComboBox<String> comboBox = new JComboBox<>(option.choices.toArray(new String[0]));
-                if (option.defaultValue != null) comboBox.setSelectedItem(option.defaultValue);
+                JComboBox<ComboItem> comboBox = new JComboBox<>();
+
+                if (!option.choices.contains("")) {
+                    comboBox.addItem(new ComboItem("(none)", "")); // Empty choice with friendly label.
+                }
+
+                for (String choice : option.choices) {
+                    comboBox.addItem(new ComboItem(choice, choice)); // Label and value are the same.
+                }
+
+                // Set default value or restore user's setting.
+                String saved = (String) storedValues.get(option);
+                String target = (saved != null) ? saved : option.defaultValue;
+                if (target != null) {
+                    for (int i = 0; i < comboBox.getItemCount(); i++) {
+                        ComboItem item = comboBox.getItemAt(i);
+                        if (item.getValue().equals(target)) {
+                            comboBox.setSelectedIndex(i);
+                            break;
+                        }
+                    }
+                }
                 inputField = comboBox;
             } else {
                 JTextField textField = new JTextField(20);
-                if (option.defaultValue != null) textField.setText(option.defaultValue);
+                String saved = (String) storedValues.get(option);
+                if (saved != null) textField.setText(saved);
+                else if (option.defaultValue != null) textField.setText(option.defaultValue);
                 inputField = textField;
             }
 
             inputField.setToolTipText(option.help);
+            inputField.setFont(mainFont);
             inputMap.put(option, inputField);
 
             gbc.gridx = 0;
@@ -104,18 +183,6 @@ public class MainWindow extends JFrame {
 
             row++;
         }
-
-        // Add a Run button.
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
-
-        JButton runButton = new JButton("Run Crawlect");
-        runButton.addActionListener(event -> runCrawlectCommand());
-
-        optionPanel.add(runButton, gbc);
 
         optionPanel.revalidate();
         optionPanel.repaint();
@@ -169,25 +236,58 @@ public class MainWindow extends JFrame {
         return "ok"; // No output file set or file doesn't exist.
     }
 
-    private void runCrawlectCommand() {
-        List<String> args = new ArrayList<>();
-
+    private void captureCurrentInputs() {
         for (Map.Entry<CliOption, JComponent> entry : inputMap.entrySet()) {
             CliOption option = entry.getKey();
             JComponent field = entry.getValue();
-            String flag = option.getPrimaryFlag();
 
-            if (option.isBoolean && field instanceof JCheckBox check && check.isSelected()) {
-                args.add(flag);
-            } else if (option.hasChoices && field instanceof JComboBox combo) {
-                String value = combo.getSelectedItem().toString();
-                args.add(flag);
-                args.add(value);
+            if (option.isBoolean && field instanceof JCheckBox check) {
+                storedValues.put(option, check.isSelected());
+            } else if (option.hasChoices && field instanceof JComboBox<?> combo) {
+                Object selectedItem = combo.getSelectedItem();
+                if (selectedItem instanceof ComboItem item) {
+                    storedValues.put(option, item.getValue());
+                }
             } else if (field instanceof JTextField text) {
-                String value = text.getText().trim();
-                if (!value.isEmpty()) {
+                storedValues.put(option, text.getText());
+            }
+        }
+    }
+
+    private void runCrawlectCommand() {
+        // store visible inputs before collecting args.
+        captureCurrentInputs();
+
+        List<String> args = new ArrayList<>();
+
+        List<CliOption> allOptions = CliSchemaParser.getInstance().getAllOptions();
+
+        for (CliOption option : allOptions) {
+            String flag = option.getPrimaryFlag();
+            Object value = storedValues.get(option);
+
+            if (option.isBoolean) {
+                if (Boolean.TRUE.equals(value) && !Objects.equals(option.defaultValue, "True")) {
+                    args.add(flag); // Add positive flag.
+                } else if (Boolean.FALSE.equals(value) && !Objects.equals(option.defaultValue, "False")) {
+                    String negativeFlag = option.getNegativeFlag();
+                    if (negativeFlag != null) {
+                        args.add(negativeFlag); // Add --no-flag form.
+                    }
+                }
+            } else if (option.hasChoices) {
+                if (value instanceof String strVal && !strVal.isEmpty()) {
                     args.add(flag);
-                    args.add(value);
+                    args.add(strVal);
+                }
+                // else: skip empty.
+            } else {
+                if (value instanceof String strVal) {
+                    strVal = strVal.trim();
+                    if (!strVal.isEmpty()) {
+                        args.add(flag);
+                        args.add(strVal);
+                    }
                 }
             }
         }

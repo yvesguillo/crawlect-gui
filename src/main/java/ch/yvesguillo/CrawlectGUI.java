@@ -13,7 +13,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 public class CrawlectGUI {
     public static void main(String[] args) throws Exception {
         try {
-            UIManager.setLookAndFeel(new FlatDarkLaf()); // <- Here
+            UIManager.setLookAndFeel(new FlatDarkLaf());
             String json = PythonRunner.getCliSchemaJson();
             CliSchemaParser.initialize(json);
 
