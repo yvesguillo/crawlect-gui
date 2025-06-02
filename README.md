@@ -193,12 +193,23 @@ src/
 | Apr 10–17 | Presentation material | communication |
 
 ## Getting Started
+0. Require:
+  - *Python"
+  - *Java v 21*
+  - *Crawlect v1.0.5* or later.
+    ```bash
+    pip install crawlect
+    ```
 
-Rebuild:
+2. Clone repository:
+```bash
+git clone https://github.com/yvesguillo/crawlect-gui.git
+```
+2. Build / Rebuild:
 ```bash
 mvn clean compile
 ```
-Test:
+3. Run:
 ```bash
 mvn exec:java
 ```
