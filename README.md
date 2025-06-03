@@ -61,7 +61,7 @@ Crawlect-GUI provides a user-friendly graphical interface to run and customize [
 | #12 | **Set CLI parameters** `--llm-model`, `--api-key`… | 3 | 2 |
 | #4 | **Toggle flag parameters** such as `--depth`, `--gitignore`… | 4 | 3 |
 | #13 | **Dropdowns or inputs** for custom filters or scoped depth | 3 | 2 |
-| #5 | **Parse available parameters from `crawlect --help`** to dynamically populate the GUI | 4 | 4 |
+| #5 | **Parse available parameters from ~`crawlect --help`~ `crawlect -clischem`** to dynamically populate the GUI | 4 | 4 |
 
 
 ### Interface & Display
@@ -156,14 +156,14 @@ This prototype lays the groundwork for a scalable, user-friendly interface to *C
 ```text
 src/
 ├─ gui/
-│  ├─ MainWindow.java                     # JFrame + layout
-│  └─ ConsolePanel.java                   # JTextArea wrapper
+│  ├─ MainWindow.java               # JFrame + layout
+│  └─ ConsolePanel.java             # JTextArea wrapper
 ├─ logic/
-│  ├─ CliOption.java                      # Standard Python Argpars converter
-│  ├─ CliSchemaParser.java                # Translate Crawlect CLI options JSON
-│  ├─ CrawlectExecutor.java               # Runs commands, handles stdout/stderr
-│  └─ CrawlectCommandBuilder.java         # Builds final CLI command
-└─ CrawlectGuiApp.java                    # Main class
+│  ├─ CliOption.java                # Standard Python Argpars converter
+│  ├─ CliSchemaParser.java          # Translate Crawlect CLI options JSON
+│  ├─ PythonRunner.java             # Runs commands, handles stdout/stderr
+│  └─ CrawlectCommandBuilder.java   # Builds final CLI command
+└─ CrawlectGui.java                 # Main class
 ```
 
 #### Related issues
@@ -174,7 +174,7 @@ src/
 | #2 | Configure output file name and destination |
 | #3 | Trigger Crawlect execution |
 | #4 | Toggle flag parameters |
-| #5 | Parse available parameters from `crawlect --help` |
+| #5 | Parse available parameters ~from `crawlect --help`~ `crawlect -clischem` |
 | #6 | Real-time stdout/stderr display |
 | #7 | FlatLaf integration |
 | #16 | Color-coded logs and warning/error highlighting |
@@ -193,9 +193,11 @@ src/
 | Apr 10–17 | Presentation material | communication |
 
 ## Getting Started
-0. Require:
-  - *Python"
-  - *Java v 21*
+
+1. Require:
+  - [*Maven v3*](https://maven.apache.org/download.cgi)
+  - [*Python v3*](https://www.python.org/downloads/)
+  - [*Java v21*](https://www.oracle.com/ch-de/java/technologies/downloads/#java21)
   - *Crawlect v1.0.5* or later.
     ```bash
     pip install crawlect
@@ -205,14 +207,17 @@ src/
 ```bash
 git clone https://github.com/yvesguillo/crawlect-gui.git
 ```
-2. Build / Rebuild:
+
+3. Build / Rebuild:
 ```bash
 mvn clean compile
 ```
-3. Run:
+
+4. Run:
 ```bash
 mvn exec:java
 ```
+
 OR specify annother entry point than the one set in the `pom.xml`.
 ```bash
 mvn exec:java -Dexec.mainClass="ch.yvesguillo.AnnotherMainClass"
