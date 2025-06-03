@@ -5,8 +5,15 @@ import ch.yvesguillo.logic.CliSchemaParser;
 import ch.yvesguillo.logic.PythonRunner;
 
 import javax.swing.*;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.awt.*;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.List;
 
@@ -28,9 +35,17 @@ public class MainWindow extends JFrame {
 
     public MainWindow(List<String> groups) {
         // Set title from manifest (fallback if null).
-        Package pkg = MainWindow.class.getPackage();
-        this.projectName = (pkg.getImplementationTitle() != null) ? pkg.getImplementationTitle() : "Crawlect-GUI";
-        this.projectVersion = (pkg.getImplementationVersion() != null) ? pkg.getImplementationVersion() : "DEV";
+        Properties props = new Properties();
+        try (InputStream stream = MainWindow.class.getClassLoader().getResourceAsStream("version.properties")) {
+            if (stream != null) {
+                props.load(stream);
+            }
+        } catch (IOException error) {
+            // System.err.println("Failed to load version.properties: " + error.getMessage());
+            // Pass.
+        }
+        this.projectName = props.getProperty("project.name", "Crawlect-GUI");
+        this.projectVersion = props.getProperty("project.version", "DEV");
 
         setTitle(projectName + " " + projectVersion);
         setSize(900, 600);
@@ -71,6 +86,9 @@ public class MainWindow extends JFrame {
         wrapper.add(optionPanel, BorderLayout.NORTH); // Forces top alignment.
         JScrollPane optionScroll = new JScrollPane(wrapper);
         add(optionScroll, BorderLayout.CENTER);
+
+        // Check for existing config.
+        loadConfig();
 
         updateOptionPanel(groupList.getSelectedValue());
     }
@@ -125,7 +143,9 @@ public class MainWindow extends JFrame {
 
         int row = 0;
         for (CliOption option : groupOptions) {
-            JLabel label = new JLabel(String.format("%-20s", option.getPrimaryFlag())); // Padding.
+            String metalabel = "";
+            if (option.metavar != null) metalabel = option.metavar; else  metalabel = option.getPrimaryFlag();
+            JLabel label = new JLabel(String.format("%-20s", metalabel)); // Padding.
             label.setPreferredSize(new Dimension(160, 25)); // Fixed width.
             label.setFont(mainFont);
             label.setToolTipText(option.help);
@@ -136,6 +156,7 @@ public class MainWindow extends JFrame {
                 JCheckBox checkBox = new JCheckBox();
                 Boolean saved = (Boolean) storedValues.get(option);
                 checkBox.setSelected(saved != null ? saved : "true".equalsIgnoreCase(option.defaultValue));
+                inputMap.put(option, checkBox);
                 inputField = checkBox;
             } else if (option.hasChoices) {
                 JComboBox<ComboItem> comboBox = new JComboBox<>();
@@ -211,6 +232,12 @@ public class MainWindow extends JFrame {
                     fileInputPanel.add(browse, BorderLayout.EAST);
                     displayComponent = fileInputPanel;
 
+                } else if (option.getPrimaryFlag().equals("--output-prefix")) {
+                    // Ignore this field. Might adapt *Crawlect* in the future.
+                    continue;
+                } else if (option.getPrimaryFlag().equals("--output-suffix")) {
+                    // Ignore this field. Might adapt *Crawlect* in the future.
+                    continue;
                 } else {
                     displayComponent = textField;
                 }
@@ -239,6 +266,77 @@ public class MainWindow extends JFrame {
 
         optionPanel.revalidate();
         optionPanel.repaint();
+    }
+
+    public static File getUserConfigFile() {
+        String userHome = System.getProperty("user.home");
+        String os = System.getProperty("os.name").toLowerCase();
+        File configFile;
+
+        if (os.contains("win")) {
+            String appData = System.getenv("APPDATA");
+            configFile = (appData != null)
+                    ? new File(appData, "crawlect-gui/config.json")
+                    : new File(userHome, "AppData/Roaming/crawlect-gui/config.json");
+        } else if (os.contains("mac")) {
+            configFile = new File(userHome, "Library/Application Support/crawlect-gui/config.json");
+        } else {
+            String xdg = System.getenv("XDG_CONFIG_HOME");
+            configFile = (xdg != null)
+                    ? new File(xdg, "crawlect-gui/config.json")
+                    : new File(userHome, ".config/crawlect-gui/config.json");
+        }
+
+        File parent = configFile.getParentFile();
+        if (!parent.exists()) {
+            boolean created = parent.mkdirs();
+            System.out.println("[Config] Creating config directory: " + parent.getAbsolutePath() +
+                    " → " + (created ? "OK" : "FAILED"));
+        }
+
+        return configFile;
+    }
+
+    public void saveConfig() {
+        File configFile = getUserConfigFile();
+        Map<String, Object> simpleMap = new HashMap<>();
+
+        for (Map.Entry<CliOption, Object> entry : storedValues.entrySet()) {
+            simpleMap.put(entry.getKey().getPrimaryFlag(), entry.getValue());
+        }
+
+        try (FileWriter writer = new FileWriter(configFile)) {
+            new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(writer, simpleMap);
+            System.out.println("[Config] Saved to: " + configFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("[Config] Save failed: " + e.getMessage());
+        }
+    }
+
+    public void loadConfig() {
+        File configFile = getUserConfigFile();
+        if (!configFile.exists()) {
+            System.out.println("[Config] No config file found at: " + configFile.getAbsolutePath());
+            return;
+        }
+
+        try {
+            Map<String, Object> simpleMap = new ObjectMapper().readValue(
+                configFile,
+                new TypeReference<Map<String, Object>>() {}
+            );
+
+            for (CliOption option : CliSchemaParser.getInstance().getAllOptions()) {
+                String key = option.getPrimaryFlag();
+                Object val = simpleMap.get(key);
+                if (val != null) {
+                    storedValues.put(option, val);
+                }
+            }
+            System.out.println("[Config] Loaded from: " + configFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("[Config] Load failed: " + e.getMessage());
+        }
     }
 
     private boolean validateInputs() {
@@ -436,6 +534,9 @@ public class MainWindow extends JFrame {
             JOptionPane.showMessageDialog(this, scrollPane,
                     "Crawlect finished",
                     JOptionPane.INFORMATION_MESSAGE);
+
+            // SAve current settings.
+            saveConfig();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,

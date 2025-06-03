@@ -28,7 +28,7 @@ public class PythonRunner {
                     return cmd;
                 }
             } catch (Exception ignored) {
-                // Pass.
+                System.out.println("[Run] Python is not " + cmd);
             }
         }
 
@@ -63,7 +63,7 @@ public class PythonRunner {
         command.addAll(args);
 
         // Debbug.
-        System.out.println("Executing: " + String.join(" ", command));
+        System.out.println("[Run] Executing: " + String.join(" ", command));
 
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.redirectErrorStream(true);
