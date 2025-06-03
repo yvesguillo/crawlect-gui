@@ -2,6 +2,8 @@
 
 **Java Swing GUI for [*Crawlect*](https://github.com/yvesguillo/crawlect)**
 
+![Crawlect-GUI](https://raw.githubusercontent.com/yvesguillo/crawlect-gui/main/images/crawlect-gui.avif)
+
 ## Why Crawlect-GUI?
 
 Enhance Crawlect’s accessibility by providing a GUI that simplifies trying, checking, and editing analysis runs.
