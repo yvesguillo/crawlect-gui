@@ -50,7 +50,7 @@ public class MainWindow extends JFrame {
         if (System.getProperty("os.name").toLowerCase().contains("mac")) {
             try {
                 java.awt.Taskbar.getTaskbar().setIconImage(
-                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_64.png")).getImage()
+                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_64-mac.png")).getImage()
                 );
             } catch (UnsupportedOperationException | SecurityException error) {
                 System.err.println("[GUI] Could not set macOS Dock icon: " + error.getMessage());
