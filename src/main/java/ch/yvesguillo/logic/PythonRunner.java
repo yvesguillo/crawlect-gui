@@ -52,7 +52,7 @@ public class PythonRunner {
             }
         }
 
-        throw new RuntimeException("Crawlect CLI schema could not be fetched. Is it installed?");
+        throw new RuntimeException("Crawlect CLI schema could not be fetched. Is Crawlect installed?");
     }
 
     public static String runCrawlect(List<String> args) throws Exception {

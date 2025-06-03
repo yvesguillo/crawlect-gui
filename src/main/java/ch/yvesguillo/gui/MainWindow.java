@@ -165,13 +165,65 @@ public class MainWindow extends JFrame {
                 JTextField textField = new JTextField(20);
                 String saved = (String) storedValues.get(option);
                 if (saved != null) textField.setText(saved);
-                else if (option.defaultValue != null) textField.setText(option.defaultValue);
-                inputField = textField;
+                // We do not want to populate default value for now.
+                // else if (option.defaultValue != null) textField.setText(option.defaultValue);
+
+                // Wrap in panel if needed.
+                JComponent displayComponent;
+
+                if (option.getPrimaryFlag().equals("--path")) {
+                    JButton browse = new JButton("📁");
+                    browse.setMargin(new Insets(2, 4, 2, 4));
+                    browse.setToolTipText("Select folder to scan");
+                    browse.addActionListener(e -> {
+                        JFileChooser chooser = new JFileChooser();
+                        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                        int result = chooser.showOpenDialog(this);
+                        if (result == JFileChooser.APPROVE_OPTION) {
+                            textField.setText(chooser.getSelectedFile().getAbsolutePath());
+                        }
+                    });
+
+                    JPanel fileInputPanel = new JPanel(new BorderLayout());
+                    fileInputPanel.add(textField, BorderLayout.CENTER);
+                    fileInputPanel.add(browse, BorderLayout.EAST);
+                    displayComponent = fileInputPanel;
+
+                } else if (option.getPrimaryFlag().equals("--output")) {
+                    JButton browse = new JButton("📁");
+                    browse.setMargin(new Insets(2, 4, 2, 4));
+                    browse.setToolTipText("Select output file path");
+                    browse.addActionListener(e -> {
+                        JFileChooser chooser = new JFileChooser();
+                        chooser.setDialogTitle("Choose output file (it will be created)");
+                        String filename = "";
+                        // Use default value as filename if exist.
+                        if (option.defaultValue != null) filename = option.defaultValue;
+                        chooser.setSelectedFile(new File(filename));
+                        int result = chooser.showSaveDialog(this);
+                        if (result == JFileChooser.APPROVE_OPTION) {
+                            textField.setText(chooser.getSelectedFile().getAbsolutePath());
+                        }
+                    });
+
+                    JPanel fileInputPanel = new JPanel(new BorderLayout());
+                    fileInputPanel.add(textField, BorderLayout.CENTER);
+                    fileInputPanel.add(browse, BorderLayout.EAST);
+                    displayComponent = fileInputPanel;
+
+                } else {
+                    displayComponent = textField;
+                }
+
+                // Always track the actual field for value capture.
+                inputMap.put(option, textField);
+
+                // But show the decorated version if it exists.
+                inputField = displayComponent;
             }
 
             inputField.setToolTipText(option.help);
             inputField.setFont(mainFont);
-            inputMap.put(option, inputField);
 
             gbc.gridx = 0;
             gbc.gridy = row;
@@ -187,6 +239,52 @@ public class MainWindow extends JFrame {
 
         optionPanel.revalidate();
         optionPanel.repaint();
+    }
+
+    private boolean validateInputs() {
+        for (Map.Entry<CliOption, JComponent> entry : inputMap.entrySet()) {
+            CliOption option = entry.getKey();
+            Object value = storedValues.get(option);
+
+            // Mandatory: --path
+            if (option.getPrimaryFlag().equals("--path")) {
+                String path = (value instanceof String s) ? s.trim() : "";
+                if (path.isEmpty()) {
+                    showValidationError("The '--path' field is required.");
+                    return false;
+                }
+            }
+
+            // Mandatory: --output
+            if (option.getPrimaryFlag().equals("--output")) {
+                String output = (value instanceof String s) ? s.trim() : "";
+                if (output.isEmpty()) {
+                    showValidationError("The '--output' field is required.");
+                    return false;
+                }
+            }
+
+            // Integer: --depth
+            if (option.getPrimaryFlag().equals("--depth")) {
+                String str = (value instanceof String s) ? s.trim() : "";
+                if (!str.isEmpty()) {
+                    try {
+                        Integer.parseInt(str);
+                    } catch (NumberFormatException e) {
+                        showValidationError("The '--depth' field must be a valid integer.");
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private void showValidationError(String message) {
+        JOptionPane.showMessageDialog(this,
+                message,
+                "Invalid Input",
+                JOptionPane.ERROR_MESSAGE);
     }
 
     private String handleOutputFileOverwrite(List<String> command) {
@@ -267,6 +365,10 @@ public class MainWindow extends JFrame {
     private void runCrawlectCommand() {
         // store visible inputs before collecting args.
         captureCurrentInputs();
+
+        if (!validateInputs()) {
+            return; // Stop if validation fails.
+        }
 
         List<String> args = new ArrayList<>();
 

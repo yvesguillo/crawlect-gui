@@ -61,7 +61,7 @@ Crawlect-GUI provides a user-friendly graphical interface to run and customize [
 | #12 | **Set CLI parameters** `--llm-model`, `--api-key`… | 3 | 2 |
 | #4 | **Toggle flag parameters** such as `--depth`, `--gitignore`… | 4 | 3 |
 | #13 | **Dropdowns or inputs** for custom filters or scoped depth | 3 | 2 |
-| #5 | **Parse available parameters from ~`crawlect --help`~ `crawlect -clischem`** to dynamically populate the GUI | 4 | 4 |
+| #5 | **Parse available parameters from ~`crawlect --help`~ `crawlect -clischem`** to dynamically populate the GUI (e.g. [cli-schema.json](cli-schema.json)) | 4 | 4 |
 
 
 ### Interface & Display
@@ -174,7 +174,7 @@ src/
 | #2 | Configure output file name and destination |
 | #3 | Trigger Crawlect execution |
 | #4 | Toggle flag parameters |
-| #5 | Parse available parameters ~from `crawlect --help`~ `crawlect -clischem` |
+| #5 | Parse available parameters from ~`crawlect --help`~ `crawlect -clischem` |
 | #6 | Real-time stdout/stderr display |
 | #7 | FlatLaf integration |
 | #16 | Color-coded logs and warning/error highlighting |
@@ -198,7 +198,7 @@ src/
   - [*Maven v3*](https://maven.apache.org/download.cgi)
   - [*Python v3*](https://www.python.org/downloads/)
   - [*Java v21*](https://www.oracle.com/ch-de/java/technologies/downloads/#java21)
-  - *Crawlect v1.0.5* or later.
+  - [*Crawlect v1.0.5*](https://pypi.org/project/Crawlect/) or later.
     ```bash
     pip install crawlect
     ```
