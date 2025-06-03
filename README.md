@@ -2,7 +2,7 @@
 
 **Java Swing GUI for [*Crawlect*](https://github.com/yvesguillo/crawlect)**
 
-![Crawlect-GUI](https://raw.githubusercontent.com/yvesguillo/crawlect-gui/main/images/crawlect-gui.avif)
+![Crawlect-GUI](images/crawlect-gui.avif)
 
 ## Why Crawlect-GUI?
 
