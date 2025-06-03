@@ -1,4 +1,4 @@
-# Crawlect-GUI
+# ![Crawlect-GUI](src/main/resources/icons/crawlect-gui_32.png) Crawlect-GUI
 
 **Java Swing GUI for [*Crawlect*](https://github.com/yvesguillo/crawlect)**
 
@@ -40,6 +40,27 @@ Enhance Crawlect’s accessibility by providing a GUI that simplifies trying, ch
 - **Documentation Assistance**  
   *A tech writer needs to update the architecture documentation of a project.*  
   Launch Crawlect-GUI to generate a Markdown snapshot of the codebase and integrate it directly into writing tools.
+
+## Getting Started
+
+### Require:
+  - [*Maven v3*](https://maven.apache.org/download.cgi)
+  - [*Python v3*](https://www.python.org/downloads/)
+  - [*Java v21*](https://www.oracle.com/ch-de/java/technologies/downloads/#java21)
+  - [*Crawlect v1.0.5*](https://pypi.org/project/Crawlect/) or later.
+    ```bash
+    pip install crawlect
+    ```
+
+### 1. Clone repository
+```bash
+git clone https://github.com/yvesguillo/crawlect-gui.git
+```
+
+### 2. Clean / Rebuild / Run
+```bash
+mvn clean compile exec:java
+```
 
 ## Overview
 
@@ -193,37 +214,6 @@ src/
 | Apr 05–06 | Output & Logging | #6, #16 |
 | Apr 07–10 | Polish & Buffer Phase | final tests |
 | Apr 10–17 | Presentation material | communication |
-
-## Getting Started
-
-1. Require:
-  - [*Maven v3*](https://maven.apache.org/download.cgi)
-  - [*Python v3*](https://www.python.org/downloads/)
-  - [*Java v21*](https://www.oracle.com/ch-de/java/technologies/downloads/#java21)
-  - [*Crawlect v1.0.5*](https://pypi.org/project/Crawlect/) or later.
-    ```bash
-    pip install crawlect
-    ```
-
-2. Clone repository:
-```bash
-git clone https://github.com/yvesguillo/crawlect-gui.git
-```
-
-3. Build / Rebuild:
-```bash
-mvn clean compile
-```
-
-4. Run:
-```bash
-mvn exec:java
-```
-
-OR specify annother entry point than the one set in the `pom.xml`.
-```bash
-mvn exec:java -Dexec.mainClass="ch.yvesguillo.AnnotherMainClass"
-```
 
 ## Roadmap & Crazy Ideas
 

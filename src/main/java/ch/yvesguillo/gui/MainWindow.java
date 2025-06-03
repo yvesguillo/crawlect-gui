@@ -178,6 +178,7 @@ public class MainWindow extends JFrame {
                 JCheckBox checkBox = new JCheckBox();
                 Boolean saved = (Boolean) storedValues.get(option);
                 checkBox.setSelected(saved != null ? saved : "true".equalsIgnoreCase(option.defaultValue));
+                // Add field to option mapping.
                 inputMap.put(option, checkBox);
                 inputField = checkBox;
             } else if (option.hasChoices) {
@@ -203,6 +204,8 @@ public class MainWindow extends JFrame {
                         }
                     }
                 }
+                // Add field to option mapping.
+                inputMap.put(option, comboBox);
                 inputField = comboBox;
             } else {
                 JTextField textField = new JTextField(20);
@@ -215,6 +218,7 @@ public class MainWindow extends JFrame {
                 JComponent displayComponent;
 
                 if (option.getPrimaryFlag().equals("--path")) {
+                    // Replace with custom value check from *ClOption* class like `customType == "Path_Selector"`.
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
                     browse.setToolTipText("Select folder to scan");
@@ -233,6 +237,7 @@ public class MainWindow extends JFrame {
                     displayComponent = fileInputPanel;
 
                 } else if (option.getPrimaryFlag().equals("--output")) {
+                    // Replace with custom value check from *ClOption* class like `customType == "File_Selector"`.
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
                     browse.setToolTipText("Select output file path");
@@ -255,10 +260,10 @@ public class MainWindow extends JFrame {
                     displayComponent = fileInputPanel;
 
                 } else if (option.getPrimaryFlag().equals("--output-prefix")) {
-                    // Ignore this field. Might adapt *Crawlect* in the future.
+                    // Ignore this field. Might adapt *Crawlect* in the future and remove the field from -clischem output.
                     continue;
                 } else if (option.getPrimaryFlag().equals("--output-suffix")) {
-                    // Ignore this field. Might adapt *Crawlect* in the future.
+                    // Ignore this field. Might adapt *Crawlect* in the future and remove the field from -clischem output.
                     continue;
                 } else {
                     displayComponent = textField;
@@ -497,6 +502,8 @@ public class MainWindow extends JFrame {
         for (CliOption option : allOptions) {
             String flag = option.getPrimaryFlag();
             Object value = storedValues.get(option);
+
+            // System.out.println("[Arg] got " + flag + " = " + value);
 
             if (option.isBoolean) {
                 if (Boolean.TRUE.equals(value) && !Objects.equals(option.defaultValue, "True")) {
