@@ -34,6 +34,29 @@ public class MainWindow extends JFrame {
     private final String projectVersion;
 
     public MainWindow(List<String> groups) {
+        // Set icon.
+        try {
+                setIconImages(List.of(
+                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_16.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_32.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_64.png")).getImage(),
+                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_256.png")).getImage()
+                ));
+            } catch (Exception error) {
+                System.err.println("[GUI] Could not load icon: " + error.getMessage());
+            }
+
+        // Set macOS Dock icon.
+        if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+            try {
+                java.awt.Taskbar.getTaskbar().setIconImage(
+                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_64.png")).getImage()
+                );
+            } catch (UnsupportedOperationException | SecurityException error) {
+                System.err.println("[GUI] Could not set macOS Dock icon: " + error.getMessage());
+            }
+        }
+
         // Set title from manifest (fallback if null).
         Properties props = new Properties();
         try (InputStream stream = MainWindow.class.getClassLoader().getResourceAsStream("version.properties")) {
@@ -41,8 +64,7 @@ public class MainWindow extends JFrame {
                 props.load(stream);
             }
         } catch (IOException error) {
-            // System.err.println("Failed to load version.properties: " + error.getMessage());
-            // Pass.
+            System.err.println("[Init] Failed to load version.properties: " + error.getMessage());
         }
         this.projectName = props.getProperty("project.name", "Crawlect-GUI");
         this.projectVersion = props.getProperty("project.version", "DEV");
@@ -529,7 +551,7 @@ public class MainWindow extends JFrame {
             JTextArea textArea = new JTextArea(output);
             textArea.setEditable(false);
             JScrollPane scrollPane = new JScrollPane(textArea);
-            scrollPane.setPreferredSize(new Dimension(800, 400));
+            scrollPane.setPreferredSize(new Dimension(480, 270));
 
             JOptionPane.showMessageDialog(this, scrollPane,
                     "Crawlect finished",

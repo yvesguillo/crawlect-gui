@@ -25,9 +25,10 @@ public class PythonRunner {
                 if (exitCode == 0) {
                     // If this line returns without throwing, the command exists.
                     pythonCommand = cmd;
+                    System.out.println("[Run] Python is: " + cmd);
                     return cmd;
                 }
-            } catch (Exception ignored) {
+            } catch (Exception exception) {
                 System.out.println("[Run] Python is not " + cmd);
             }
         }
