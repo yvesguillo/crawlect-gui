@@ -19,7 +19,7 @@ public final class PythonRunner {
 
     // Private constructor to prevent instantiation.
     private PythonRunner() {
-        throw new UnsupportedOperationException("Utility class");
+        throw new UnsupportedOperationException("PythonRunner is an utility class");
     }
 
     /**

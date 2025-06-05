@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
  * You can use {@link #initialize(String)} to explicitly initialize then {@link #getInstance(String)} to retrive the singleton, or {@link #lazyGetInstance(String)} to auto-initialize on first access.
  */
 public final class CliSchemaParser {
+
     private static CliSchemaParser instance;
     private final List<CliOption> options;
 

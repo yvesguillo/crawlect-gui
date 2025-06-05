@@ -2,16 +2,12 @@ package ch.yvesguillo.gui;
 
 import ch.yvesguillo.logic.CliOption;
 import ch.yvesguillo.logic.CliSchemaParser;
+import ch.yvesguillo.logic.UserSettings;
 import ch.yvesguillo.logic.PythonRunner;
 
 import javax.swing.*;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.awt.*;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -26,9 +22,6 @@ public class MainWindow extends JFrame {
     // Style.
     private static final Font mainFont = UIManager.getFont("Label.font").deriveFont(12f);
     private static final Font heavyFont = UIManager.getFont("Label.font").deriveFont(Font.BOLD, 14f);
-
-    private final Map<CliOption, JComponent> inputMap = new HashMap<>();
-    private final Map<CliOption, Object> storedValues = new HashMap<>(); // Cache values when refreshing option panel for input persistance.
 
     private final String projectName;
     private final String projectVersion;
@@ -110,7 +103,7 @@ public class MainWindow extends JFrame {
         add(optionScroll, BorderLayout.CENTER);
 
         // Check for existing config.
-        loadConfig();
+        UserSettings.loadConfig();
 
         updateOptionPanel(groupList.getSelectedValue());
     }
@@ -293,77 +286,6 @@ public class MainWindow extends JFrame {
 
         optionPanel.revalidate();
         optionPanel.repaint();
-    }
-
-    public static File getUserConfigFile() {
-        String userHome = System.getProperty("user.home");
-        String os = System.getProperty("os.name").toLowerCase();
-        File configFile;
-
-        if (os.contains("win")) {
-            String appData = System.getenv("APPDATA");
-            configFile = (appData != null)
-                    ? new File(appData, "crawlect-gui/config.json")
-                    : new File(userHome, "AppData/Roaming/crawlect-gui/config.json");
-        } else if (os.contains("mac")) {
-            configFile = new File(userHome, "Library/Application Support/crawlect-gui/config.json");
-        } else {
-            String xdg = System.getenv("XDG_CONFIG_HOME");
-            configFile = (xdg != null)
-                    ? new File(xdg, "crawlect-gui/config.json")
-                    : new File(userHome, ".config/crawlect-gui/config.json");
-        }
-
-        File parent = configFile.getParentFile();
-        if (!parent.exists()) {
-            boolean created = parent.mkdirs();
-            System.out.println("[Config] Creating config directory: " + parent.getAbsolutePath() +
-                    " → " + (created ? "OK" : "FAILED"));
-        }
-
-        return configFile;
-    }
-
-    public void saveConfig() {
-        File configFile = getUserConfigFile();
-        Map<String, Object> simpleMap = new HashMap<>();
-
-        for (Map.Entry<CliOption, Object> entry : storedValues.entrySet()) {
-            simpleMap.put(entry.getKey().getPrimaryFlag(), entry.getValue());
-        }
-
-        try (FileWriter writer = new FileWriter(configFile)) {
-            new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(writer, simpleMap);
-            System.out.println("[Config] Saved to: " + configFile.getAbsolutePath());
-        } catch (IOException e) {
-            System.err.println("[Config] Save failed: " + e.getMessage());
-        }
-    }
-
-    public void loadConfig() {
-        File configFile = getUserConfigFile();
-        if (!configFile.exists()) {
-            System.out.println("[Config] No config file found at: " + configFile.getAbsolutePath());
-            return;
-        }
-
-        try {
-            Map<String, Object> simpleMap = new ObjectMapper().readValue(
-                configFile,
-                new TypeReference<Map<String, Object>>() {}
-            );
-
-            for (CliOption option : CliSchemaParser.getInstance().getAllOptions()) {
-                String key = option.getPrimaryFlag();
-                Object val = simpleMap.get(key);
-                if (val != null) {
-                    storedValues.put(option, val);
-                }
-            }
-            System.out.println("[Config] Loaded from: " + configFile.getAbsolutePath());
-        } catch (IOException e) {
-            System.err.println("[Config] Load failed: " + e.getMessage());
-        }
     }
 
     private boolean validateInputs() {
@@ -565,7 +487,7 @@ public class MainWindow extends JFrame {
                     JOptionPane.INFORMATION_MESSAGE);
 
             // SAve current settings.
-            saveConfig();
+            UserSettings.saveConfig();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,
