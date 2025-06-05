@@ -16,10 +16,11 @@ import javax.swing.JComponent;
  */
 public final class UserSettings {
 
-    private final Map<CliOption, JComponent> inputMap = new HashMap<>();
-    private final Map<CliOption, Object> storedValues = new HashMap<>(); // Cache values when refreshing option panel for input persistance.
-    public static UserSettings() {
-        throw new UnsupportedOperationException("UserSettings is an utility class");
+    // Cache values when refreshing option panel for input persistance.
+    private static Map<CliOption, Object> storedValues;
+
+    public UserSettings() {
+        storedValues = new HashMap<>();
     }
 
     public static File getUserConfigFile() {
