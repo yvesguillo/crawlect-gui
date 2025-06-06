@@ -26,21 +26,24 @@ public class MainWindow extends JFrame {
     private final String projectName;
     private final String projectVersion;
 
+    // Cache form composition.
+    private final Map<CliOption, JComponent> inputMap = new HashMap<>();
+    // Cache form values for input persistance.
+    private Map<CliOption, Object> storedValues = new HashMap<>();
+
     public MainWindow(List<String> groups) {
         // Set icon.
-        try {
-                setIconImages(List.of(
-                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_16.png")).getImage(),
-                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_32.png")).getImage(),
-                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_64.png")).getImage(),
-                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_256.png")).getImage()
-                ));
-            } catch (Exception error) {
-                System.err.println("[GUI] Could not load icon: " + error.getMessage());
+        String os = System.getProperty("os.name").toLowerCase();
+        // For Linux.
+        if (os.contains("linux")) {
+            try {
+                setIconImage(new ImageIcon(getClass().getResource("/icons/crawlect-gui_64.png")).getImage());
+            } catch (Exception e) {
+                System.err.println("[GUI] Could not set Linux icon: " + e.getMessage());
             }
-
-        // Set macOS Dock icon.
-        if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+        }
+        // For macOS Dock icon.
+        else if (os.contains("mac")) {
             try {
                 java.awt.Taskbar.getTaskbar().setIconImage(
                     new ImageIcon(getClass().getResource("/icons/crawlect-gui_64-mac.png")).getImage()
@@ -48,6 +51,19 @@ public class MainWindow extends JFrame {
             } catch (UnsupportedOperationException | SecurityException error) {
                 System.err.println("[GUI] Could not set macOS Dock icon: " + error.getMessage());
             }
+        }
+        // Fallback and Windows.
+        else {
+            try {
+                    setIconImages(List.of(
+                        new ImageIcon(getClass().getResource("/icons/crawlect-gui_16.png")).getImage(),
+                        new ImageIcon(getClass().getResource("/icons/crawlect-gui_32.png")).getImage(),
+                        new ImageIcon(getClass().getResource("/icons/crawlect-gui_64.png")).getImage(),
+                        new ImageIcon(getClass().getResource("/icons/crawlect-gui_256.png")).getImage()
+                    ));
+                } catch (Exception error) {
+                    System.err.println("[GUI] Could not set icons: " + error.getMessage());
+                }
         }
 
         // Set title from manifest (fallback if null).
@@ -61,6 +77,9 @@ public class MainWindow extends JFrame {
         }
         this.projectName = props.getProperty("project.name", "Crawlect-GUI");
         this.projectVersion = props.getProperty("project.version", "DEV");
+
+        // Init users settings.
+        UserSettings.lazyGetInstance(projectName.toLowerCase() + " " + projectVersion);
 
         setTitle(projectName + " " + projectVersion);
         setSize(900, 600);
@@ -103,7 +122,7 @@ public class MainWindow extends JFrame {
         add(optionScroll, BorderLayout.CENTER);
 
         // Check for existing config.
-        UserSettings.loadConfig();
+        storedValues = UserSettings.getInstance().loadConfig();
 
         updateOptionPanel(groupList.getSelectedValue());
     }
@@ -486,8 +505,8 @@ public class MainWindow extends JFrame {
                     "Crawlect finished",
                     JOptionPane.INFORMATION_MESSAGE);
 
-            // SAve current settings.
-            UserSettings.saveConfig();
+            // Save current settings.
+            UserSettings.getInstance().saveConfig(storedValues);
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this,

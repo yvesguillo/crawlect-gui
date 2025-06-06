@@ -3,6 +3,7 @@ package ch.yvesguillo.logic;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a command-line option parsed from a CLI schema JSON.
@@ -82,7 +83,21 @@ public class CliOption {
                 .orElse("");
     }
 
-    // Adapt representation.
+    // Adapt standard methodes.
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        CliOption other = (CliOption) obj;
+        return Objects.equals(getPrimaryFlag(), other.getPrimaryFlag());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPrimaryFlag());
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
