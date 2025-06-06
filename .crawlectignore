@@ -4,3 +4,6 @@
 
 # Ignore Markdown documentation files
 README.md
+
+# Exclude some useless files from digest.
+*.json

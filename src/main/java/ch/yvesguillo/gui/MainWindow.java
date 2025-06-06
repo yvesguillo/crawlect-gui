@@ -3,13 +3,11 @@ package ch.yvesguillo.gui;
 import ch.yvesguillo.logic.CliOption;
 import ch.yvesguillo.logic.CliSchemaParser;
 import ch.yvesguillo.logic.UserSettings;
-import ch.yvesguillo.logic.PythonRunner;
+import ch.yvesguillo.logic.CrawlectRunner;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.List;
 
@@ -23,65 +21,14 @@ public class MainWindow extends JFrame {
     private static final Font mainFont = UIManager.getFont("Label.font").deriveFont(12f);
     private static final Font heavyFont = UIManager.getFont("Label.font").deriveFont(Font.BOLD, 14f);
 
-    private final String projectName;
-    private final String projectVersion;
-
     // Cache form composition.
     private final Map<CliOption, JComponent> inputMap = new HashMap<>();
     // Cache form values for input persistance.
     private Map<CliOption, Object> storedValues = new HashMap<>();
 
-    public MainWindow(List<String> groups) {
-        // Set icon.
-        String os = System.getProperty("os.name").toLowerCase();
-        // For Linux.
-        if (os.contains("linux")) {
-            try {
-                setIconImage(new ImageIcon(getClass().getResource("/icons/crawlect-gui_64.png")).getImage());
-            } catch (Exception e) {
-                System.err.println("[GUI] Could not set Linux icon: " + e.getMessage());
-            }
-        }
-        // For macOS Dock icon.
-        else if (os.contains("mac")) {
-            try {
-                java.awt.Taskbar.getTaskbar().setIconImage(
-                    new ImageIcon(getClass().getResource("/icons/crawlect-gui_64-mac.png")).getImage()
-                );
-            } catch (UnsupportedOperationException | SecurityException error) {
-                System.err.println("[GUI] Could not set macOS Dock icon: " + error.getMessage());
-            }
-        }
-        // Fallback and Windows.
-        else {
-            try {
-                    setIconImages(List.of(
-                        new ImageIcon(getClass().getResource("/icons/crawlect-gui_16.png")).getImage(),
-                        new ImageIcon(getClass().getResource("/icons/crawlect-gui_32.png")).getImage(),
-                        new ImageIcon(getClass().getResource("/icons/crawlect-gui_64.png")).getImage(),
-                        new ImageIcon(getClass().getResource("/icons/crawlect-gui_256.png")).getImage()
-                    ));
-                } catch (Exception error) {
-                    System.err.println("[GUI] Could not set icons: " + error.getMessage());
-                }
-        }
+    public MainWindow(List<String> groups, String appTitle, String appVersion) {
 
-        // Set title from manifest (fallback if null).
-        Properties props = new Properties();
-        try (InputStream stream = MainWindow.class.getClassLoader().getResourceAsStream("version.properties")) {
-            if (stream != null) {
-                props.load(stream);
-            }
-        } catch (IOException error) {
-            System.err.println("[Init] Failed to load version.properties: " + error.getMessage());
-        }
-        this.projectName = props.getProperty("project.name", "Crawlect-GUI");
-        this.projectVersion = props.getProperty("project.version", "DEV");
-
-        // Init users settings.
-        UserSettings.lazyGetInstance(projectName.toLowerCase() + " " + projectVersion);
-
-        setTitle(projectName + " " + projectVersion);
+        setTitle(appTitle + " " + appVersion);
         setSize(900, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -108,7 +55,7 @@ public class MainWindow extends JFrame {
         JButton runButton = new JButton("Run Crawlect ▶");
         runButton.setFont(heavyFont);
         runButton.setPreferredSize(new Dimension(250, 40));
-        runButton.addActionListener(event -> runCrawlectCommand());
+        runButton.addActionListener(event -> CrawlectRunner.runCrawlectCommand(inputMap, storedValues, this));
         leftPanel.add(runButton, BorderLayout.SOUTH);
 
         add(leftPanel, BorderLayout.WEST);
@@ -125,25 +72,6 @@ public class MainWindow extends JFrame {
         storedValues = UserSettings.getInstance().loadConfig();
 
         updateOptionPanel(groupList.getSelectedValue());
-    }
-
-    public class ComboItem {
-        private final String label;
-        private final String value;
-
-        public ComboItem(String label, String value) {
-            this.label = label;
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        @Override
-        public String toString() {
-            return label; // What gets displayed in the combo box.
-        }
     }
 
     private void updateOptionPanel(String group) {
@@ -305,214 +233,5 @@ public class MainWindow extends JFrame {
 
         optionPanel.revalidate();
         optionPanel.repaint();
-    }
-
-    private boolean validateInputs() {
-        for (Map.Entry<CliOption, JComponent> entry : inputMap.entrySet()) {
-            CliOption option = entry.getKey();
-            Object value = storedValues.get(option);
-
-            // Mandatory: --path
-            if (option.getPrimaryFlag().equals("--path")) {
-                String path = (value instanceof String s) ? s.trim() : "";
-                if (path.isEmpty()) {
-                    showValidationError("The '--path' field is required.");
-                    return false;
-                }
-            }
-
-            // Mandatory: --output
-            if (option.getPrimaryFlag().equals("--output")) {
-                String output = (value instanceof String s) ? s.trim() : "";
-                if (output.isEmpty()) {
-                    showValidationError("The '--output' field is required.");
-                    return false;
-                }
-            }
-
-            // Integer: --depth
-            if (option.getPrimaryFlag().equals("--depth")) {
-                String str = (value instanceof String s) ? s.trim() : "";
-                if (!str.isEmpty()) {
-                    try {
-                        Integer.parseInt(str);
-                    } catch (NumberFormatException e) {
-                        showValidationError("The '--depth' field must be a valid integer.");
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    private void showValidationError(String message) {
-        JOptionPane.showMessageDialog(this,
-                message,
-                "Invalid Input",
-                JOptionPane.ERROR_MESSAGE);
-    }
-
-    private String handleOutputFileOverwrite(List<String> command) {
-        for (int i = 0; i < command.size(); i++) {
-            String flag = command.get(i);
-            if (flag.equals("-o") || flag.equals("--output")) {
-                if (i + 1 < command.size()) {
-                    String outputPath = command.get(i + 1);
-                    java.io.File outputFile = new java.io.File(outputPath);
-
-                    File parentDir = outputFile.getParentFile();
-                    if (parentDir != null && (!parentDir.exists() || !parentDir.canWrite())) {
-                        JOptionPane.showMessageDialog(this,
-                                "Cannot write to the output directory:\n" + parentDir.getAbsolutePath(),
-                                "Output Path Error",
-                                JOptionPane.ERROR_MESSAGE);
-                        return null;
-                    }
-
-                    if (outputFile.exists()) {
-                        int choice = JOptionPane.showOptionDialog(this,
-                                "The file '" + outputFile.getName() + "' already exists.\nWhat would you like to do?",
-                                "Output File Exists",
-                                JOptionPane.YES_NO_CANCEL_OPTION,
-                                JOptionPane.WARNING_MESSAGE,
-                                null,
-                                new String[]{"Change file", "Overwrite", "Cancel"},
-                                "Change file");
-
-                        if (choice == 0) { // Change file.
-                            JFileChooser fileChooser = new JFileChooser();
-                            fileChooser.setSelectedFile(outputFile);
-                            int result = fileChooser.showSaveDialog(this);
-                            if (result == JFileChooser.APPROVE_OPTION) {
-                                String newPath = fileChooser.getSelectedFile().getAbsolutePath();
-                                command.set(i + 1, newPath);
-                                return newPath;
-                            } else {
-                                return null; // Cancelled.
-                            }
-                        } else if (choice == 1) { // Overwrite.
-                            if (!outputFile.delete()) {
-                                JOptionPane.showMessageDialog(this,
-                                        "Failed to delete the existing output file.\nPlease try changing the file name.",
-                                        "File Deletion Error",
-                                        JOptionPane.ERROR_MESSAGE);
-                                return null;
-                            }
-                            return outputPath;
-                        } else {
-                            return null; // Cancel.
-                        }
-                    }
-                }
-            }
-        }
-        return "ok"; // No output file set or file doesn't exist.
-    }
-
-    private void captureCurrentInputs() {
-        for (Map.Entry<CliOption, JComponent> entry : inputMap.entrySet()) {
-            CliOption option = entry.getKey();
-            JComponent field = entry.getValue();
-
-            if (option.isBoolean && field instanceof JCheckBox check) {
-                storedValues.put(option, check.isSelected());
-            } else if (option.hasChoices && field instanceof JComboBox<?> combo) {
-                Object selectedItem = combo.getSelectedItem();
-                if (selectedItem instanceof ComboItem item) {
-                    storedValues.put(option, item.getValue());
-                }
-            } else if (field instanceof JTextField text) {
-                storedValues.put(option, text.getText());
-            }
-        }
-    }
-
-    private void runCrawlectCommand() {
-        // store visible inputs before collecting args.
-        captureCurrentInputs();
-
-        if (!validateInputs()) {
-            return; // Stop if validation fails.
-        }
-
-        List<String> args = new ArrayList<>();
-
-        List<CliOption> allOptions = CliSchemaParser.getInstance().getAllOptions();
-
-        for (CliOption option : allOptions) {
-            String flag = option.getPrimaryFlag();
-            Object value = storedValues.get(option);
-
-            // System.out.println("[Arg] got " + flag + " = " + value);
-
-            if (option.isBoolean) {
-                if (Boolean.TRUE.equals(value) && !Objects.equals(option.defaultValue, "True")) {
-                    args.add(flag); // Add positive flag.
-                } else if (Boolean.FALSE.equals(value) && !Objects.equals(option.defaultValue, "False")) {
-                    String negativeFlag = option.getNegativeFlag();
-                    if (negativeFlag != null) {
-                        args.add(negativeFlag); // Add --no-flag form.
-                    }
-                }
-            } else if (option.hasChoices) {
-                if (value instanceof String strVal && !strVal.isEmpty()) {
-                    args.add(flag);
-                    args.add(strVal);
-                }
-                // else: skip empty.
-            } else {
-                if (value instanceof String strVal) {
-                    strVal = strVal.trim();
-                    if (!strVal.isEmpty()) {
-                        args.add(flag);
-                        args.add(strVal);
-                    }
-                }
-            }
-        }
-
-        try {
-
-            String outputCheck = handleOutputFileOverwrite(args);
-            if (outputCheck == null) {
-                return; // User cancelled.
-            }
-
-            // Check if path exists (for --path or -p)
-            for (int i = 0; i < args.size(); i++) {
-                String flag = args.get(i);
-                if ((flag.equals("--path") || flag.equals("-p")) && i + 1 < args.size()) {
-                    String pathStr = args.get(i + 1);
-                    java.io.File path = new java.io.File(pathStr);
-                    if (!path.exists() || !path.isDirectory()) {
-                        JOptionPane.showMessageDialog(this,
-                                "The selected path to scan does not exist or is not a directory:\n" + pathStr,
-                                "Invalid Path to Scan",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-            }
-
-            String output = PythonRunner.runCrawlect(args);
-            JTextArea textArea = new JTextArea(output);
-            textArea.setEditable(false);
-            JScrollPane scrollPane = new JScrollPane(textArea);
-            scrollPane.setPreferredSize(new Dimension(480, 270));
-
-            JOptionPane.showMessageDialog(this, scrollPane,
-                    "Crawlect finished",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            // Save current settings.
-            UserSettings.getInstance().saveConfig(storedValues);
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this,
-                    "Error running Crawlect: " + ex.getMessage(),
-                    "Execution Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
     }
 }
