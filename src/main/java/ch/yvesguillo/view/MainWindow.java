@@ -1,12 +1,11 @@
 package ch.yvesguillo.view;
 
-import javax.swing.*;
-
 import ch.yvesguillo.controller.CliOption;
 import ch.yvesguillo.controller.CliSchemaParser;
-import ch.yvesguillo.controller.CrawlectRunner;
+import ch.yvesguillo.controller.MainController;
 import ch.yvesguillo.controller.UserSettings;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.*;
@@ -27,7 +26,11 @@ public class MainWindow extends JFrame {
     // Cache form values for input persistance.
     private Map<CliOption, Object> storedValues = new HashMap<>();
 
+    private MainController controller;
+
     public MainWindow(List<String> groups, String appTitle, String appVersion) {
+
+        this.controller = new MainController(this);
 
         setTitle(appTitle + " " + appVersion);
         setSize(900, 600);
@@ -56,7 +59,7 @@ public class MainWindow extends JFrame {
         JButton runButton = new JButton("Run Crawlect ▶");
         runButton.setFont(heavyFont);
         runButton.setPreferredSize(new Dimension(250, 40));
-        runButton.addActionListener(event -> CrawlectRunner.runCrawlectCommand(inputMap, storedValues, this));
+        runButton.addActionListener(event -> controller.onRunButtonPressed(inputMap, storedValues));
         leftPanel.add(runButton, BorderLayout.SOUTH);
 
         add(leftPanel, BorderLayout.WEST);
