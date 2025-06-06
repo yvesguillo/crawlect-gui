@@ -1,11 +1,12 @@
-package ch.yvesguillo.gui;
-
-import ch.yvesguillo.logic.CliOption;
-import ch.yvesguillo.logic.CliSchemaParser;
-import ch.yvesguillo.logic.UserSettings;
-import ch.yvesguillo.logic.CrawlectRunner;
+package ch.yvesguillo.view;
 
 import javax.swing.*;
+
+import ch.yvesguillo.controller.CliOption;
+import ch.yvesguillo.controller.CliSchemaParser;
+import ch.yvesguillo.controller.CrawlectRunner;
+import ch.yvesguillo.controller.UserSettings;
+
 import java.awt.*;
 import java.io.File;
 import java.util.*;

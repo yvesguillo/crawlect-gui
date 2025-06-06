@@ -1,4 +1,4 @@
-package ch.yvesguillo.logic;
+package ch.yvesguillo.controller;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

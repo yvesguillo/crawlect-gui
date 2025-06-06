@@ -1,9 +1,9 @@
 package ch.yvesguillo;
 
-import ch.yvesguillo.logic.CliSchemaParser;
-import ch.yvesguillo.logic.PythonRunner;
-import ch.yvesguillo.logic.UserSettings;
-import ch.yvesguillo.gui.MainWindow;
+import ch.yvesguillo.controller.CliSchemaParser;
+import ch.yvesguillo.controller.PythonRunner;
+import ch.yvesguillo.controller.UserSettings;
+import ch.yvesguillo.view.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;

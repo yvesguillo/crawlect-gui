@@ -1,4 +1,4 @@
-package ch.yvesguillo.gui;
+package ch.yvesguillo.view;
 
 public class ComboItem {
     private final String label;

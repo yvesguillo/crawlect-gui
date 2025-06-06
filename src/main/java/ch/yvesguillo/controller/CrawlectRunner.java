@@ -1,7 +1,4 @@
-package ch.yvesguillo.logic;
-
-import ch.yvesguillo.gui.ShowMessages;
-import ch.yvesguillo.gui.ComboItem;
+package ch.yvesguillo.controller;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,6 +7,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.swing.*;
+
+import ch.yvesguillo.view.ComboItem;
+import ch.yvesguillo.view.ShowMessages;
+
 import java.awt.*;
 
 public class CrawlectRunner {

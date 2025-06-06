@@ -1,4 +1,4 @@
-package ch.yvesguillo.gui;
+package ch.yvesguillo.view;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
