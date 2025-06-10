@@ -17,17 +17,16 @@ import com.formdev.flatlaf.FlatDarkLaf;
 public class CrawlectGUI {
     public static String appName;
     public static String appVersion;
-    public static MainWindow win;
+    public static MainWindow view;
+    public static MainController controler;
+
     public static void main(String[] args) {
         try {
-            // Set Look & Feel
             UIManager.setLookAndFeel(new FlatDarkLaf());
 
-            // Get CLI schema from Python backend
             String json = PythonRunner.getCliSchemaJson();
             CliSchemaParser.initialize(json);
 
-            // Load app name and version from properties
             String name = "Crawlect-GUI";
             String version = "DEV";
 
@@ -42,18 +41,16 @@ public class CrawlectGUI {
                 System.err.println("[Init] Could not load version.properties: " + e.getMessage());
             }
 
-            // Init users settings.
             UserSettings.initialize(appName.toLowerCase() + " " + appVersion);
 
-            // Launch UI
             SwingUtilities.invokeLater(() -> {
-                win  = new MainWindow(CliSchemaParser.getInstance().getGroups(), appName, appVersion);
-                setAppIcon(win);
-                win.setVisible(true);
+                MainWindow.initialize(CliSchemaParser.getInstance().getGroups(), appName, appVersion);
+                view = MainWindow.getInstance();
+                setAppIcon(view);
+                view.setVisible(true);
             });
 
-            // Init controller.
-            MainController.initialize(win);
+            MainController.initialize(view);
 
         } catch (Exception error) {
             SwingUtilities.invokeLater(() -> {
@@ -73,12 +70,10 @@ public class CrawlectGUI {
             String os = System.getProperty("os.name").toLowerCase();
 
             if (os.contains("mac")) {
-                // macOS: Dock icon only
                 Taskbar.getTaskbar().setIconImage(
                         new ImageIcon(CrawlectGUI.class.getResource("/icons/crawlect-gui_64-mac.png")).getImage()
                 );
             } else {
-                // Fallback icon (for Windows + Linux)
                 List<Image> icons = List.of(
                         new ImageIcon(CrawlectGUI.class.getResource("/icons/crawlect-gui_16.png")).getImage(),
                         new ImageIcon(CrawlectGUI.class.getResource("/icons/crawlect-gui_32.png")).getImage(),
@@ -88,8 +83,7 @@ public class CrawlectGUI {
                 win.setIconImages(icons);
 
                 if (os.contains("linux")) {
-                    // Linux hint (may help under some L&Fs)
-                    UIManager.put("Frame.iconImage", icons.get(2)); // 64px
+                    UIManager.put("Frame.iconImage", icons.get(2));
                 }
             }
         } catch (Exception e) {

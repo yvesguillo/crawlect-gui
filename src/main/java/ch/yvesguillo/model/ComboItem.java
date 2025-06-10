@@ -15,7 +15,6 @@ public class ComboItem {
 
     @Override
     public String toString() {
-        // What gets displayed in the combo box.
         return label;
     }
 }

@@ -8,27 +8,27 @@ import ch.yvesguillo.model.ComboItem;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
 public class MainWindow extends JFrame {
 
+    private static MainWindow instance;
+
     private final JList<String> groupList;
     private final DefaultListModel<String> groupListModel;
     private final JPanel optionPanel;
 
-    // Style.
     private static final Font mainFont = UIManager.getFont("Label.font").deriveFont(12f);
     private static final Font heavyFont = UIManager.getFont("Label.font").deriveFont(Font.BOLD, 14f);
 
-    // Cache form composition.
-    private final Map<CliOption, JComponent> inputMap = new HashMap<>();
-    // Cache form values for input persistance.
-    private Map<CliOption, Object> storedValues = new HashMap<>();
+    public static final Map<CliOption, JComponent> inputMap = new HashMap<>();
+    public static Map<CliOption, Object> storedValues = new HashMap<>();
 
     private final MainController controller;
 
-    public MainWindow(List<String> groups, String appTitle, String appVersion) {
+    public MainWindow(List<String> groups, String appTitle, String appVersion) throws IOException {
 
         controller = MainController.getInstance();
 
@@ -37,7 +37,6 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Layout: Left panel for groups, right panel for options.
         setLayout(new BorderLayout());
 
         groupListModel = new DefaultListModel<>();
@@ -52,7 +51,6 @@ public class MainWindow extends JFrame {
         groupScroll.setPreferredSize(new Dimension(250, 600));
         add(groupScroll, BorderLayout.WEST);
 
-        // Add a Run button.
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.add(groupScroll, BorderLayout.CENTER);
 
@@ -68,18 +66,45 @@ public class MainWindow extends JFrame {
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.Y_AXIS));
         optionPanel.setAlignmentY(Component.TOP_ALIGNMENT);
         JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.add(optionPanel, BorderLayout.NORTH); // Forces top alignment.
+        wrapper.add(optionPanel, BorderLayout.NORTH);
         JScrollPane optionScroll = new JScrollPane(wrapper);
         add(optionScroll, BorderLayout.CENTER);
 
-        // Check for existing config.
         storedValues = UserSettings.getInstance().loadConfig();
 
         updateOptionPanel(groupList.getSelectedValue());
     }
 
+    public static synchronized void initialize(List<String> groups, String appTitle, String appVersion) {
+        if (instance != null) {
+            throw new IllegalStateException("MainWindow has already been initialized.");
+        }
+        try {
+            instance = new MainWindow(groups, appTitle, appVersion);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to initialize MainWindow: " + e.getMessage(), e);
+        }
+    }
+
+    public static synchronized MainWindow lazyGetInstance(List<String> groups, String appTitle, String appVersion) {
+        if (instance == null) {
+            try {
+                instance = new MainWindow(groups, appTitle, appVersion);
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to lazily initialize MainWindow: " + e.getMessage(), e);
+            }
+        }
+        return instance;
+    }
+
+    public static MainWindow getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("MainWindow has not been initialized.");
+        }
+        return instance;
+    }
+
     private void updateOptionPanel(String group) {
-        // Save current input values before clearing
         for (Map.Entry<CliOption, JComponent> entry : inputMap.entrySet()) {
             CliOption option = entry.getKey();
             JComponent field = entry.getValue();
@@ -111,8 +136,8 @@ public class MainWindow extends JFrame {
         for (CliOption option : groupOptions) {
             String metalabel = "";
             if (option.metavar != null) metalabel = option.metavar; else  metalabel = option.getPrimaryFlag();
-            JLabel label = new JLabel(String.format("%-20s", metalabel)); // Padding.
-            label.setPreferredSize(new Dimension(160, 25)); // Fixed width.
+            JLabel label = new JLabel(String.format("%-20s", metalabel));
+            label.setPreferredSize(new Dimension(160, 25));
             label.setFont(mainFont);
             label.setToolTipText(option.help);
 
@@ -122,21 +147,19 @@ public class MainWindow extends JFrame {
                 JCheckBox checkBox = new JCheckBox();
                 Boolean saved = (Boolean) storedValues.get(option);
                 checkBox.setSelected(saved != null ? saved : "true".equalsIgnoreCase(option.defaultValue));
-                // Add field to option mapping.
                 inputMap.put(option, checkBox);
                 inputField = checkBox;
             } else if (option.hasChoices) {
                 JComboBox<ComboItem> comboBox = new JComboBox<>();
 
                 if (!option.choices.contains("")) {
-                    comboBox.addItem(new ComboItem("(none)", "")); // Empty choice with friendly label.
+                    comboBox.addItem(new ComboItem("(none)", ""));
                 }
 
                 for (String choice : option.choices) {
-                    comboBox.addItem(new ComboItem(choice, choice)); // Label and value are the same.
+                    comboBox.addItem(new ComboItem(choice, choice));
                 }
 
-                // Set default value or restore user's setting.
                 String saved = (String) storedValues.get(option);
                 String target = (saved != null) ? saved : option.defaultValue;
                 if (target != null) {
@@ -148,25 +171,20 @@ public class MainWindow extends JFrame {
                         }
                     }
                 }
-                // Add field to option mapping.
                 inputMap.put(option, comboBox);
                 inputField = comboBox;
             } else {
                 JTextField textField = new JTextField(20);
                 String saved = (String) storedValues.get(option);
                 if (saved != null) textField.setText(saved);
-                // We do not want to populate default value for now.
-                // else if (option.defaultValue != null) textField.setText(option.defaultValue);
 
-                // Wrap in panel if needed.
                 JComponent displayComponent;
 
                 if (option.getPrimaryFlag().equals("--path")) {
-                    // Replace with custom value check from *ClOption* class like `customType == "Path_Selector"`.
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
                     browse.setToolTipText("Select folder to scan");
-                    browse.addActionListener(e -> controller.scanPathModifRequest());
+                    browse.addActionListener(e -> controller.pathModifRequest(textField));
 
                     JPanel fileInputPanel = new JPanel(new BorderLayout());
                     fileInputPanel.add(textField, BorderLayout.CENTER);
@@ -174,11 +192,10 @@ public class MainWindow extends JFrame {
                     displayComponent = fileInputPanel;
 
                 } else if (option.getPrimaryFlag().equals("--output")) {
-                    // Replace with custom value check from *ClOption* class like `customType == "File_Selector"`.
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
                     browse.setToolTipText("Select output file path");
-                    browse.addActionListener(e -> controller.outputPathModifRequest());
+                    browse.addActionListener(e -> controller.pathModifRequest(textField));
 
                     JPanel fileInputPanel = new JPanel(new BorderLayout());
                     fileInputPanel.add(textField, BorderLayout.CENTER);
@@ -186,19 +203,14 @@ public class MainWindow extends JFrame {
                     displayComponent = fileInputPanel;
 
                 } else if (option.getPrimaryFlag().equals("--output-prefix")) {
-                    // Ignore this field. Might adapt *Crawlect* in the future and remove the field from -clischem output.
                     continue;
                 } else if (option.getPrimaryFlag().equals("--output-suffix")) {
-                    // Ignore this field. Might adapt *Crawlect* in the future and remove the field from -clischem output.
                     continue;
                 } else {
                     displayComponent = textField;
                 }
-
-                // Always track the actual field for value capture.
                 inputMap.put(option, textField);
 
-                // But show the decorated version if it exists.
                 inputField = displayComponent;
             }
 
