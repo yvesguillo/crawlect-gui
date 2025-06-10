@@ -12,22 +12,47 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Main Swing window for the Crawlect GUI application.
+ * 
+ * Displays:
+ * - a sidebar with CLI option groups,
+ * - a dynamic panel of inputs based on the selected group,
+ * - a "Run" button to execute Crawlect.
+ *
+ * Handles input rendering, persistence of user settings, and communication with the controller.
+ */
 public class MainWindow extends JFrame {
 
+    // Singleton instance
     private static MainWindow instance;
 
+    // UI components
     private final JList<String> groupList;
     private final DefaultListModel<String> groupListModel;
     private final JPanel optionPanel;
 
+    // Fonts used across the UI
     private static final Font mainFont = UIManager.getFont("Label.font").deriveFont(12f);
     private static final Font heavyFont = UIManager.getFont("Label.font").deriveFont(Font.BOLD, 14f);
 
+    // Maps CLI options to their input widgets for value retrieval.
     public static final Map<CliOption, JComponent> inputMap = new HashMap<>();
+
+    // Stores user-provided or restored values for all CLI options.
     public static Map<CliOption, Object> storedValues = new HashMap<>();
 
+    // Reference to controller
     private final MainController controller;
 
+    /**
+     * Constructs the main application window and initializes UI components.
+     *
+     * @param groups List of option groups (from the CLI schema).
+     * @param appTitle Application name to show in the title bar.
+     * @param appVersion Version to show in the title bar.
+     * @throws IOException if controller setup fails.
+     */
     public MainWindow(List<String> groups, String appTitle, String appVersion) throws IOException {
 
         controller = MainController.getInstance();
@@ -36,9 +61,11 @@ public class MainWindow extends JFrame {
         setSize(900, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
         setLayout(new BorderLayout());
 
+        /////////////////////////
+        // Sidebar: Group list //
+        /////////////////////////
         groupListModel = new DefaultListModel<>();
         groups.forEach(groupListModel::addElement);
         groupList = new JList<>(groupListModel);
@@ -49,8 +76,8 @@ public class MainWindow extends JFrame {
 
         JScrollPane groupScroll = new JScrollPane(groupList);
         groupScroll.setPreferredSize(new Dimension(250, 600));
-        add(groupScroll, BorderLayout.WEST);
 
+        // Add Run button below group list
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.add(groupScroll, BorderLayout.CENTER);
 
@@ -62,19 +89,31 @@ public class MainWindow extends JFrame {
 
         add(leftPanel, BorderLayout.WEST);
 
+        /////////////////////////////////////////
+        // Main content: Dynamic options panel //
+        /////////////////////////////////////////
         optionPanel = new JPanel();
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.Y_AXIS));
         optionPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+
         JPanel wrapper = new JPanel(new BorderLayout());
+        // Top-aligned scroll content
         wrapper.add(optionPanel, BorderLayout.NORTH);
         JScrollPane optionScroll = new JScrollPane(wrapper);
         add(optionScroll, BorderLayout.CENTER);
 
+        // Load previous values if any
         storedValues = UserSettings.getInstance().loadConfig();
 
+        // Initial group display
         updateOptionPanel(groupList.getSelectedValue());
     }
 
+    /**
+     * Explicitly initializes the singleton MainWindow instance.
+     *
+     * @throws IllegalStateException if already initialized or on failure.
+     */
     public static synchronized void initialize(List<String> groups, String appTitle, String appVersion) {
         if (instance != null) {
             throw new IllegalStateException("MainWindow has already been initialized.");
@@ -86,6 +125,9 @@ public class MainWindow extends JFrame {
         }
     }
 
+    /**
+     * Lazily initializes the singleton MainWindow, or returns the current one.
+     */
     public static synchronized MainWindow lazyGetInstance(List<String> groups, String appTitle, String appVersion) {
         if (instance == null) {
             try {
@@ -97,6 +139,11 @@ public class MainWindow extends JFrame {
         return instance;
     }
 
+    /**
+     * Returns the already-initialized singleton instance.
+     *
+     * @throws IllegalStateException if not yet initialized.
+     */
     public static MainWindow getInstance() {
         if (instance == null) {
             throw new IllegalStateException("MainWindow has not been initialized.");
@@ -104,7 +151,15 @@ public class MainWindow extends JFrame {
         return instance;
     }
 
+    /**
+     * Dynamically rebuilds the options panel for the selected group.
+     * Called when the user selects a new group in the sidebar.
+     *
+     * @param group Name of the CLI option group to display.
+     */
     private void updateOptionPanel(String group) {
+
+        // Save current values
         for (Map.Entry<CliOption, JComponent> entry : inputMap.entrySet()) {
             CliOption option = entry.getKey();
             JComponent field = entry.getValue();
@@ -120,9 +175,10 @@ public class MainWindow extends JFrame {
                 storedValues.put(option, text.getText());
             }
         }
+
+        // Reset and prepare layout
         optionPanel.removeAll();
         inputMap.clear();
-
         optionPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -131,11 +187,10 @@ public class MainWindow extends JFrame {
         gbc.weightx = 1;
 
         List<CliOption> groupOptions = CliSchemaParser.getInstance().getOptionsForGroup(group);
-
         int row = 0;
+
         for (CliOption option : groupOptions) {
-            String metalabel = "";
-            if (option.metavar != null) metalabel = option.metavar; else  metalabel = option.getPrimaryFlag();
+            String metalabel = (option.metavar != null) ? option.metavar : option.getPrimaryFlag();
             JLabel label = new JLabel(String.format("%-20s", metalabel));
             label.setPreferredSize(new Dimension(160, 25));
             label.setFont(mainFont);
@@ -149,17 +204,15 @@ public class MainWindow extends JFrame {
                 checkBox.setSelected(saved != null ? saved : "true".equalsIgnoreCase(option.defaultValue));
                 inputMap.put(option, checkBox);
                 inputField = checkBox;
+
             } else if (option.hasChoices) {
                 JComboBox<ComboItem> comboBox = new JComboBox<>();
-
                 if (!option.choices.contains("")) {
                     comboBox.addItem(new ComboItem("(none)", ""));
                 }
-
                 for (String choice : option.choices) {
                     comboBox.addItem(new ComboItem(choice, choice));
                 }
-
                 String saved = (String) storedValues.get(option);
                 String target = (saved != null) ? saved : option.defaultValue;
                 if (target != null) {
@@ -173,17 +226,20 @@ public class MainWindow extends JFrame {
                 }
                 inputMap.put(option, comboBox);
                 inputField = comboBox;
+
             } else {
+                // Standard text field input
                 JTextField textField = new JTextField(20);
                 String saved = (String) storedValues.get(option);
                 if (saved != null) textField.setText(saved);
 
                 JComponent displayComponent;
 
-                if (option.getPrimaryFlag().equals("--path")) {
+                if (option.getPrimaryFlag().equals("--path") || option.getPrimaryFlag().equals("--output")) {
+                    // File chooser helper buttons
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
-                    browse.setToolTipText("Select folder to scan");
+                    browse.setToolTipText(option.getPrimaryFlag().equals("--path") ? "Select folder to scan" : "Select output file path");
                     browse.addActionListener(e -> controller.pathModifRequest(textField));
 
                     JPanel fileInputPanel = new JPanel(new BorderLayout());
@@ -191,32 +247,21 @@ public class MainWindow extends JFrame {
                     fileInputPanel.add(browse, BorderLayout.EAST);
                     displayComponent = fileInputPanel;
 
-                } else if (option.getPrimaryFlag().equals("--output")) {
-                    JButton browse = new JButton("📁");
-                    browse.setMargin(new Insets(2, 4, 2, 4));
-                    browse.setToolTipText("Select output file path");
-                    browse.addActionListener(e -> controller.pathModifRequest(textField));
-
-                    JPanel fileInputPanel = new JPanel(new BorderLayout());
-                    fileInputPanel.add(textField, BorderLayout.CENTER);
-                    fileInputPanel.add(browse, BorderLayout.EAST);
-                    displayComponent = fileInputPanel;
-
-                } else if (option.getPrimaryFlag().equals("--output-prefix")) {
-                    continue;
-                } else if (option.getPrimaryFlag().equals("--output-suffix")) {
+                } else if (option.getPrimaryFlag().equals("--output-prefix") || option.getPrimaryFlag().equals("--output-suffix")) {
+                    // Skip these options for now
                     continue;
                 } else {
                     displayComponent = textField;
                 }
-                inputMap.put(option, textField);
 
+                inputMap.put(option, textField);
                 inputField = displayComponent;
             }
 
             inputField.setToolTipText(option.help);
             inputField.setFont(mainFont);
 
+            // Layout the label and input field side by side
             gbc.gridx = 0;
             gbc.gridy = row;
             gbc.weightx = 0.3;
@@ -229,6 +274,7 @@ public class MainWindow extends JFrame {
             row++;
         }
 
+        // Refresh UI
         optionPanel.revalidate();
         optionPanel.repaint();
     }
