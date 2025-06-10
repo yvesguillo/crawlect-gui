@@ -1,4 +1,4 @@
-package ch.yvesguillo.controller;
+package ch.yvesguillo.model;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

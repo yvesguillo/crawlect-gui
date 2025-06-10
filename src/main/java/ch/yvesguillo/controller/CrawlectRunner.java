@@ -8,7 +8,9 @@ import java.util.Objects;
 
 import javax.swing.*;
 
-import ch.yvesguillo.view.ComboItem;
+import ch.yvesguillo.model.CliOption;
+import ch.yvesguillo.model.CliSchemaParser;
+import ch.yvesguillo.model.ComboItem;
 import ch.yvesguillo.view.ShowMessages;
 
 import java.awt.*;

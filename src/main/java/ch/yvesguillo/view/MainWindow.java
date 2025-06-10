@@ -1,13 +1,13 @@
 package ch.yvesguillo.view;
 
-import ch.yvesguillo.controller.CliOption;
-import ch.yvesguillo.controller.CliSchemaParser;
 import ch.yvesguillo.controller.MainController;
 import ch.yvesguillo.controller.UserSettings;
+import ch.yvesguillo.model.CliOption;
+import ch.yvesguillo.model.CliSchemaParser;
+import ch.yvesguillo.model.ComboItem;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.util.*;
 import java.util.List;
 
@@ -26,11 +26,11 @@ public class MainWindow extends JFrame {
     // Cache form values for input persistance.
     private Map<CliOption, Object> storedValues = new HashMap<>();
 
-    private MainController controller;
+    private final MainController controller;
 
     public MainWindow(List<String> groups, String appTitle, String appVersion) {
 
-        this.controller = new MainController(this);
+        controller = MainController.getInstance();
 
         setTitle(appTitle + " " + appVersion);
         setSize(900, 600);
@@ -59,7 +59,7 @@ public class MainWindow extends JFrame {
         JButton runButton = new JButton("Run Crawlect ▶");
         runButton.setFont(heavyFont);
         runButton.setPreferredSize(new Dimension(250, 40));
-        runButton.addActionListener(event -> controller.onRunButtonPressed(inputMap, storedValues));
+        runButton.addActionListener(e -> controller.runnRequest());
         leftPanel.add(runButton, BorderLayout.SOUTH);
 
         add(leftPanel, BorderLayout.WEST);
@@ -166,14 +166,7 @@ public class MainWindow extends JFrame {
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
                     browse.setToolTipText("Select folder to scan");
-                    browse.addActionListener(e -> {
-                        JFileChooser chooser = new JFileChooser();
-                        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                        int result = chooser.showOpenDialog(this);
-                        if (result == JFileChooser.APPROVE_OPTION) {
-                            textField.setText(chooser.getSelectedFile().getAbsolutePath());
-                        }
-                    });
+                    browse.addActionListener(e -> controller.scanPathModifRequest());
 
                     JPanel fileInputPanel = new JPanel(new BorderLayout());
                     fileInputPanel.add(textField, BorderLayout.CENTER);
@@ -185,18 +178,7 @@ public class MainWindow extends JFrame {
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
                     browse.setToolTipText("Select output file path");
-                    browse.addActionListener(e -> {
-                        JFileChooser chooser = new JFileChooser();
-                        chooser.setDialogTitle("Choose output file (it will be created)");
-                        String filename = "";
-                        // Use default value as filename if exist.
-                        if (option.defaultValue != null) filename = option.defaultValue;
-                        chooser.setSelectedFile(new File(filename));
-                        int result = chooser.showSaveDialog(this);
-                        if (result == JFileChooser.APPROVE_OPTION) {
-                            textField.setText(chooser.getSelectedFile().getAbsolutePath());
-                        }
-                    });
+                    browse.addActionListener(e -> controller.outputPathModifRequest());
 
                     JPanel fileInputPanel = new JPanel(new BorderLayout());
                     fileInputPanel.add(textField, BorderLayout.CENTER);

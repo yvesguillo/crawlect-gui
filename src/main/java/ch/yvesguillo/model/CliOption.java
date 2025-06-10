@@ -1,4 +1,4 @@
-package ch.yvesguillo.controller;
+package ch.yvesguillo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

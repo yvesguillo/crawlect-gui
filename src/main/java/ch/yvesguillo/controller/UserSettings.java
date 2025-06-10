@@ -3,6 +3,9 @@ package ch.yvesguillo.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.yvesguillo.model.CliOption;
+import ch.yvesguillo.model.CliSchemaParser;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

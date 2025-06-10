@@ -1,8 +1,9 @@
 package ch.yvesguillo;
 
-import ch.yvesguillo.controller.CliSchemaParser;
 import ch.yvesguillo.controller.PythonRunner;
 import ch.yvesguillo.controller.UserSettings;
+import ch.yvesguillo.controller.MainController;
+import ch.yvesguillo.model.CliSchemaParser;
 import ch.yvesguillo.view.MainWindow;
 
 import javax.swing.*;
@@ -16,6 +17,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 public class CrawlectGUI {
     public static String appName;
     public static String appVersion;
+    public static MainWindow win;
     public static void main(String[] args) {
         try {
             // Set Look & Feel
@@ -41,14 +43,17 @@ public class CrawlectGUI {
             }
 
             // Init users settings.
-            UserSettings.lazyGetInstance(appName.toLowerCase() + " " + appVersion);
+            UserSettings.initialize(appName.toLowerCase() + " " + appVersion);
 
             // Launch UI
             SwingUtilities.invokeLater(() -> {
-                MainWindow win = new MainWindow(CliSchemaParser.getInstance().getGroups(), appName, appVersion);
+                win  = new MainWindow(CliSchemaParser.getInstance().getGroups(), appName, appVersion);
                 setAppIcon(win);
                 win.setVisible(true);
             });
+
+            // Init controller.
+            MainController.initialize(win);
 
         } catch (Exception error) {
             SwingUtilities.invokeLater(() -> {
@@ -63,7 +68,7 @@ public class CrawlectGUI {
         }
     }
 
-    private static void setAppIcon(JFrame frame) {
+    private static void setAppIcon(JFrame win) {
         try {
             String os = System.getProperty("os.name").toLowerCase();
 
@@ -80,7 +85,7 @@ public class CrawlectGUI {
                         new ImageIcon(CrawlectGUI.class.getResource("/icons/crawlect-gui_64.png")).getImage(),
                         new ImageIcon(CrawlectGUI.class.getResource("/icons/crawlect-gui_256.png")).getImage()
                 );
-                frame.setIconImages(icons);
+                win.setIconImages(icons);
 
                 if (os.contains("linux")) {
                     // Linux hint (may help under some L&Fs)
