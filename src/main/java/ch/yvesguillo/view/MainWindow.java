@@ -42,9 +42,6 @@ public class MainWindow extends JFrame {
     // Stores user-provided or restored values for all CLI options.
     public static Map<CliOption, Object> storedValues = new HashMap<>();
 
-    // Reference to controller
-    private final MainController controller;
-
     /**
      * Constructs the main application window and initializes UI components.
      *
@@ -54,8 +51,6 @@ public class MainWindow extends JFrame {
      * @throws IOException if controller setup fails.
      */
     public MainWindow(List<String> groups, String appTitle, String appVersion) throws IOException {
-
-        controller = MainController.getInstance();
 
         setTitle(appTitle + " " + appVersion);
         setSize(900, 600);
@@ -84,7 +79,7 @@ public class MainWindow extends JFrame {
         JButton runButton = new JButton("Run Crawlect ▶");
         runButton.setFont(heavyFont);
         runButton.setPreferredSize(new Dimension(250, 40));
-        runButton.addActionListener(e -> controller.runnRequest());
+        runButton.addActionListener(e -> MainController.lazyGetInstance(this).runnRequest());
         leftPanel.add(runButton, BorderLayout.SOUTH);
 
         add(leftPanel, BorderLayout.WEST);
@@ -240,7 +235,7 @@ public class MainWindow extends JFrame {
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
                     browse.setToolTipText(option.getPrimaryFlag().equals("--path") ? "Select folder to scan" : "Select output file path");
-                    browse.addActionListener(e -> controller.pathModifRequest(textField));
+                    browse.addActionListener(e -> MainController.lazyGetInstance(this).pathModifRequest(textField));
 
                     JPanel fileInputPanel = new JPanel(new BorderLayout());
                     fileInputPanel.add(textField, BorderLayout.CENTER);

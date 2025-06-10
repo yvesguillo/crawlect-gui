@@ -34,9 +34,6 @@ public class CrawlectGUI {
     /** Reference to the main GUI window. */
     public static MainWindow view;
 
-    /** Reference to the main controller. */
-    public static MainController controler;
-
     /**
      * Main method: launches the GUI.
      *
@@ -77,12 +74,13 @@ public class CrawlectGUI {
                 // Initialize and display the GUI window
                 MainWindow.initialize(CliSchemaParser.getInstance().getGroups(), appName, appVersion);
                 view = MainWindow.getInstance();
+
+                // Initialize controller
+                MainController.initialize(view);
+
                 setAppIcon(view);
                 view.setVisible(true);
             });
-
-            // Initialize controller logic after view is ready
-            MainController.initialize(view);
 
         } catch (Exception error) {
             // Graceful error fallback: show dialog and exit
