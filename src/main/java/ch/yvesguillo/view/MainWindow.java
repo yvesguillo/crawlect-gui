@@ -79,7 +79,7 @@ public class MainWindow extends JFrame {
         JButton runButton = new JButton("Run Crawlect ▶");
         runButton.setFont(heavyFont);
         runButton.setPreferredSize(new Dimension(250, 40));
-        runButton.addActionListener(e -> MainController.lazyGetInstance(this).runnRequest());
+        runButton.addActionListener(e -> MainController.getInstance().runnRequest());
         leftPanel.add(runButton, BorderLayout.SOUTH);
 
         add(leftPanel, BorderLayout.WEST);
@@ -230,12 +230,24 @@ public class MainWindow extends JFrame {
 
                 JComponent displayComponent;
 
-                if (option.getPrimaryFlag().equals("--path") || option.getPrimaryFlag().equals("--output")) {
+                if (option.getPrimaryFlag().equals("--path")) {
                     // File chooser helper buttons
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
-                    browse.setToolTipText(option.getPrimaryFlag().equals("--path") ? "Select folder to scan" : "Select output file path");
-                    browse.addActionListener(e -> MainController.lazyGetInstance(this).pathModifRequest(textField));
+                    browse.setToolTipText("Select folder to scan");
+                    browse.addActionListener(e -> MainController.getInstance().folderPathModifRequest(textField));
+
+                    JPanel fileInputPanel = new JPanel(new BorderLayout());
+                    fileInputPanel.add(textField, BorderLayout.CENTER);
+                    fileInputPanel.add(browse, BorderLayout.EAST);
+                    displayComponent = fileInputPanel;
+
+                } else if (option.getPrimaryFlag().equals("--output")) {
+                    // File chooser helper buttons
+                    JButton browse = new JButton("📁");
+                    browse.setMargin(new Insets(2, 4, 2, 4));
+                    browse.setToolTipText("Select output file path");
+                    browse.addActionListener(e -> MainController.getInstance().filePathModifRequest(textField));
 
                     JPanel fileInputPanel = new JPanel(new BorderLayout());
                     fileInputPanel.add(textField, BorderLayout.CENTER);

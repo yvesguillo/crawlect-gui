@@ -1,5 +1,6 @@
 package ch.yvesguillo.controller;
 
+import java.io.File;
 import java.io.IOException;
 import javax.swing.*;
 
@@ -85,15 +86,39 @@ public class MainController {
     }
 
     /**
-     * Opens a directory chooser to allow the user to select a path (for the --path input).
-     * Updates the given text field with the selected path.
+     * Opens a directory chooser to allow the user to select a path.
+     * Updates the given text field with the selected folder path.
      *
      * @param field JTextField to be updated with the selected directory path.
      */
-    public void pathModifRequest(JTextField field) {
-        JFileChooser chooser = new JFileChooser();
+    public void folderPathModifRequest(JTextField field) {
+        String folderPath = "";
+        // Use default value as foldet path if exist.
+        if (field.getText() != null && !field.getText().equals("")) folderPath = field.getText();
+        JFileChooser chooser = new JFileChooser(folderPath);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int result = chooser.showOpenDialog(view);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            field.setText(chooser.getSelectedFile().getAbsolutePath());
+        }
+
+        System.out.println("[Control] Path modification requested");
+    }
+
+    /**
+     * Opens a directory chooser to allow the user to select a file path.
+     * Updates the given text field with the selected file path.
+     *
+     * @param field JTextField to be updated with the selected directory path.
+     */
+    public void filePathModifRequest(JTextField field) {
+        JFileChooser chooser = new JFileChooser();
+        String filePath = "";
+        // Use default value as file path if exist.
+        if (field.getText() != null && !field.getText().equals("")) filePath = field.getText();
+        chooser.setSelectedFile(new File(filePath));
+        int result = chooser.showSaveDialog(view);
 
         if (result == JFileChooser.APPROVE_OPTION) {
             field.setText(chooser.getSelectedFile().getAbsolutePath());

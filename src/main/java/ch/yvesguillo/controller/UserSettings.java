@@ -135,7 +135,7 @@ public final class UserSettings {
 
         if (!configFile.exists()) {
             System.out.println("[Config] No config file found at: " + configFile.getAbsolutePath());
-            return Collections.emptyMap();
+            return storedValues;
         }
 
         try {
@@ -156,6 +156,6 @@ public final class UserSettings {
             System.err.println("[Config] Load failed: " + e.getMessage());
         }
 
-        return new HashMap<>(storedValues);
+        return storedValues;
     }
 }
