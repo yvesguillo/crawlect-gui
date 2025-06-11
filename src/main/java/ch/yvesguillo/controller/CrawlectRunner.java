@@ -202,7 +202,7 @@ public class CrawlectRunner {
                 }
             }
 
-            String output = PythonRunner.runCrawlect(args);
+            String output = runCrawlect(args);
             JTextArea textArea = new JTextArea(output);
             textArea.setEditable(false);
             JScrollPane scrollPane = new JScrollPane(textArea);
@@ -216,5 +216,31 @@ public class CrawlectRunner {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(win, "Error running Crawlect: " + ex.getMessage(), "Execution Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    /**
+     * Runs the Crawlect module with the given arguments.
+     *
+     * @param args list of CLI arguments (excluding the "python -m crawlect" prefix).
+     * @return stdout output as a string.
+     * @throws RuntimeException if Crawlect exits with an error.
+     */
+    public static String runCrawlect(List<String> args) throws Exception {
+        List<String> command = new ArrayList<>();
+        command.add(PythonRunner.getPythonCommand());
+        command.add("-m");
+        command.add("crawlect");
+        command.addAll(args);
+
+        System.out.println("[Run] Executing: " + String.join(" ", command));
+
+        Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
+        String output = PythonRunner.readProcessOutput(process);
+
+        if (process.waitFor() != 0) {
+            throw new RuntimeException("Crawlect exited with code " + process.exitValue());
+        }
+
+        return output;
     }
 }

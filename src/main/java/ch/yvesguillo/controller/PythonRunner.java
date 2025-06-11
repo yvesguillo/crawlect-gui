@@ -69,39 +69,13 @@ public final class PythonRunner {
     }
 
     /**
-     * Runs the Crawlect module with the given arguments.
-     *
-     * @param args list of CLI arguments (excluding the "python -m crawlect" prefix).
-     * @return stdout output as a string.
-     * @throws RuntimeException if Crawlect exits with an error.
-     */
-    public static String runCrawlect(List<String> args) throws Exception {
-        List<String> command = new ArrayList<>();
-        command.add(getPythonCommand());
-        command.add("-m");
-        command.add("crawlect");
-        command.addAll(args);
-
-        System.out.println("[Run] Executing: " + String.join(" ", command));
-
-        Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
-        String output = readProcessOutput(process);
-
-        if (process.waitFor() != 0) {
-            throw new RuntimeException("Crawlect exited with code " + process.exitValue());
-        }
-
-        return output;
-    }
-
-    /**
      * Reads the full stdout of a process and returns it as a String.
      *
      * @param process the running process.
      * @return process output as a String.
      * @throws Exception if an I/O error occurs.
      */
-    private static String readProcessOutput(Process process) throws Exception {
+    public static String readProcessOutput(Process process) throws Exception {
         StringBuilder output = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String line;
