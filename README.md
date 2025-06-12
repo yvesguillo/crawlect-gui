@@ -107,14 +107,14 @@ Crawlect-GUI dynamically retrieves available command-line options directly from 
 - Python [Crawlect](https://github.com/yvesguillo/crawlect) CLI app via [`ProcessBuilder`](https://docs.oracle.com/en/java/javase/24/core/attributes-that-processbuilder-manages.html) class.
 - JSON parsing with [Jackson](https://github.com/FasterXML/jackson)
 
-## GUI Features
+### GUI Features
 
 - **Dynamic Option Panels**: Adjust according to Crawlect's CLI schema.
 - **Persistent User Preferences**: Saves your last-used settings.
 - **Cross-platform Friendly**: Special care taken for macOS, Windows, and Linux users.
 - **FlatLaf Dark Theme**: Easy on the eyes, clear look.
 
-## Structure
+### Structure
 
 ```text
 src/
@@ -140,20 +140,22 @@ src/
       └─ version.properties
 ```
 
+### Flow Map
+
 ```text
                    +-----------------------------+
-                   |         Launch App          |
+                   |         Launch App          | User starts the Crawlect-GUI application.
                    +--------------+--------------+
                                   |
                                   v
                    +-----------------------------+
-                   |     Load CLI Schema JSON    |
-                   |    (From Crawlect Python)   |
+                   |     Load CLI Schema JSON    | GUI retrieves CLI schema options
+                   |    (From Crawlect Python)   | from the Crawlect Python backend.
                    +--------------+--------------+
                                   |
                                   v
                    +-----------------------------+
-                   |        Initialize GUI       |
+                   |        Initialize GUI       | GUI dynamically renders option inputs.
                    |  (MainWindow with options)  |
                    +--------------+--------------+
                                   |
@@ -161,7 +163,7 @@ src/
   |                               |
   |                               v
   |                +-----------------------------+
-  |                |     User Selects Options    |
+  |                |     User Selects Options    | User fills in the GUI form.
   |                |    (Path, Output, Flags)    |
   |                +--------------+--------------+
   |                               |
@@ -173,7 +175,7 @@ src/
   |                               |
   |                               v
   |                +-----------------------------+
-  |                |       Validate Inputs       |
+  |                |       Validate Inputs       | GUI checks user inputs.
   |                |                             |
   |                +--------------+--------------+
   |                               |
@@ -209,7 +211,7 @@ src/
   |                                               |
   |                                               v
   |                                     +-------------------+
-  |                                     |  Execute Crawlect |
+  |                                     |  Execute Crawlect | Python script is executed in the background.
   |                                     |  Python CLI Call  |
   |                                     +---------+---------+
   |                                               |
@@ -227,13 +229,13 @@ src/
   |                                               |
   |                                               v
   |                                     +-------------------+
-  |                                     |     Save User     |
+  |                                     |     Save User     | Preferences are persisted for convenience.
   |                                     |   Settings JSON   |
   |                                     +---------+---------+
   |                                               |
   |                                               v
   |                                     +-------------------+
-  |                                     |    Await Next     |
+  |                                     |    Await Next     | Ready for another task.
   |                                     |    User Action    |
   |                                     +---------+---------+
   |                                               |
