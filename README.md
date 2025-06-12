@@ -1,13 +1,13 @@
 # ![Crawlect-GUI](src/main/resources/icons/crawlect-gui_32.png) Crawlect-GUI
 
-**Your friendly GUI companion for [*Crawlect*](https://github.com/yvesguillo/crawlect)**
+**Your friendly GUI companion for [*Crawlect*](https://github.com/yvesguillo/crawlect)**  
 ***Give your keyboard a well-deserved break!** Now you can crawl, collect, document your codebase and enhance it with AI LLM analysis, without touching the command line!*
 
 ![Crawlect-GUI](images/crawlect-gui.avif)
 
-**Crawlect-GUI** is a Java-based Swing interface designed to make [**Crawlect**](https://github.com/yvesguillo/crawlect); the Python CLI tool; more accessible and user-friendly. No more typing commands by hand: simply click, choose options, and let Crawlect-GUI handle the rest!
+**Crawlect-GUI** is a Java-based Swing interface designed to make [**Crawlect**](https://github.com/yvesguillo/crawlect); the Python CLI tool; more accessible and user-friendly. No more typing long commands: simply click, choose options, and let Crawlect-GUI handle the rest!
 
-Whether you're documenting your project, analyzing unfamiliar codebases, or collaborating with your team, **Crawlect-GUI** offers a straightforward, visual way to harness the full power of Crawlect.
+Whether you're documenting your project, analyzing unfamiliar codebases, or collaborating with your team, **Crawlect-GUI** offers a straightforward, visual way to harness the full capabilities of Crawlect.
 
 > *Crawlect-GUI* is a study project initiated by [*Yves Guillo*](https://yvesguillo.ch) & [*Alexandre Jenzer*](https://github.com/Alex141298), supervised by *Aïcha Rizzotti-Kaddouri* during [*He-Arc*](https://www.he-arc.ch/en/)'s *CAS-IDD*'s *GUI* module (2025).
 
@@ -16,16 +16,16 @@ Whether you're documenting your project, analyzing unfamiliar codebases, or coll
 Ever wish Crawlect had a more visual, intuitive interface? We've got you covered. Crawlect-GUI:
 
 - Provides a clean, intuitive GUI to manage Crawlect parameters.
-- Fetches and dynamically displays available CLI options directly from Crawlect.
-- Saves and recalls your preferences automatically, so setup is even quicker next time!
-- No need to memorize Crawlect's parameters, all is there.
+- Dynamically fetches and displays available CLI options directly from Crawlect core.
+- Retains your preferences, so setup is even quicker next time!
+- No need to memorize Crawlect's parameters, all is in the view.
 
 ***Think of Crawlect-GUI as your Crawlect assistant; friendly, efficient, and all about simplicity.***
 
 ## Use Cases
 
 - Quickly generate Markdown documentation without command-line fuss.
-- Understand and visualize project structures instantly.
+- Understand and visualize project in few clicks.
 - Share clear, comprehensive project digests with your teammates.
 - Easily test and manage complex crawling configurations.
 
@@ -69,10 +69,7 @@ Crawlect-GUI is built in Java (Swing) and integrates seamlessly with your existi
   - [*Maven v3*](https://maven.apache.org/download.cgi)
   - [*Python v3*](https://www.python.org/downloads/)
   - [*Java v21+*](https://www.oracle.com/ch-de/java/technologies/downloads/#java21)
-  - [*Crawlect v1.0.5+*](https://pypi.org/project/Crawlect/)
-    ```bash
-    pip install crawlect
-    ```
+  - [*Crawlect v1.0.5+*](https://pypi.org/project/Crawlect/) (`pip install crawlect`)
 
 ### Installation & Run
 
@@ -92,17 +89,17 @@ Once the GUI launches:
 
 1. **Choose the path** of the folder to crawl.
 2. **Set your output** Markdown file location.
-3. **Customize** your Crawlect options through the intuitive panels.
+3. **Customize** your Crawlect options through the options panels.
 4. Click **"Run Crawlect"** and let Crawlect-GUI handle the rest.
 
 ## How Does Crawlect-GUI Work?
 
-Crawlect-GUI dynamically retrieves available command-line options directly from Crawlect. It then:
+Crawlect-GUI dynamically retrieves available command-line options directly from Crawlect core and:
 
 1. Presents options neatly grouped and easy-to-navigate.
-2. Validates inputs in real-time.
-3. Runs Crawlect seamlessly in the background.
-4. Handles output gracefully and displays results directly in the interface.
+2. Validates inputs.
+3. Runs Crawlect in the background.
+4. Handles output and displays Cawlect core messages directly in the interface.
 
 ### Technologies
 
@@ -115,7 +112,7 @@ Crawlect-GUI dynamically retrieves available command-line options directly from 
 - **Dynamic Option Panels**: Adjust according to Crawlect's CLI schema.
 - **Persistent User Preferences**: Saves your last-used settings.
 - **Cross-platform Friendly**: Special care taken for macOS, Windows, and Linux users.
-- **FlatLaf Dark Theme**: Easy on the eyes, professional look.
+- **FlatLaf Dark Theme**: Easy on the eyes, clear look.
 
 ## Structure
 
@@ -144,201 +141,209 @@ src/
 ```
 
 ```text
-+-------------------+
-|   CrawlectGUI     |
-+-------------------+
-| - appName         |
-| - appVersion      |
-| - view            |
-+-------------------+
-| + main(args)      |
-| - setAppIcon()    |
-+---------+---------+
-          |
-          v
-+--------------------+
-|    MainWindow      |<----------+
-+--------------------+           |
-| - groupList        |           |
-| - optionPanel      |           |
-| - inputMap         |           |
-| - storedValues     |           |
-+--------------------+           |
-| + initialize()     |           |
-| + updateOptionPanel()|         |
-+---------+----------+           |
-          |                      |
-          v                      |
-+--------------------+           |
-|   MainController   |-----------+
-+--------------------+
-| - instance         |
-| - view             |
-+--------------------+
-| + runnRequest()    |
-| + folderPathModifRequest()|
-| + filePathModifRequest()  |
-+---------+----------+
-          |
-          v
-+--------------------+
-|   CrawlectRunner   |
-+--------------------+
-| + runCrawlectCommand()|
-| + validateInputs() |
-| + captureCurrentInputs()|
-+---------+----------+
-          |
-          v
-+--------------------+
-|    PythonRunner    |
-+--------------------+
-| + runCrawlect()    |
-| + getCliSchemaJson()|
-| + getPythonCommand()|
-+--------------------+
+  +----------------------------+
+  |        CrawlectGUI         |
+  +----------------------------+
+  | - appName                  |
+  | - appVersion               |
+  | - view                     |
+  +----------------------------+
+  | + main(args)               |
+  | - setAppIcon()             |
+  +-------------+--------------+
+                |
+                v
+  +----------------------------+
+  |        MainWindow          |<-----------+
+  +----------------------------+            |
+  | - groupList                |            |
+  | - optionPanel              |            |
+  | - inputMap                 |            |
+  | - storedValues             |            |
+  +----------------------------+            |
+  | + initialize()             |            |
+  | + updateOptionPanel()      |            |
+  +-------------+--------------+            |
+                |                           |
+                v                           |
+  +----------------------------+            |
+  |   MainController           |------------+
+  +----------------------------+
+  | - instance                 |
+  | - view                     |
+  +----------------------------+
+  | + runnRequest()            |
+  | + folderPathModifRequest() |
+  | + filePathModifRequest()   |
+  +-------------+--------------+
+                |
+                v
+  +----------------------------+
+  |       CrawlectRunner       |
+  +----------------------------+
+  | + runCrawlectCommand()     |
+  | + validateInputs()         |
+  | + captureCurrentInputs()   |
+  +-------------+--------------+
+                |
+                v
+  +----------------------------+
+  |        PythonRunner        |
+  +----------------------------+
+  | + runCrawlect()            |
+  | + getCliSchemaJson()       |
+  | + getPythonCommand()       |
+  +----------------------------+
 
-+-------------------+     uses
-|   CliSchemaParser |<---------------+
-+-------------------+                |
-| - options         |                |
-+-------------------+                |
-| + initialize()    |                |
-| + getOptionsForGroup()|            |
-| + getGroups()     |                |
-+-------------------+                |
-                                     |
-+-------------------+     parses     |
-|     CliOption     |                |
-+-------------------+                |
-| - flags           |                |
-| - type            |                |
-| - defaultValue    |                |
-+-------------------+                |
-                                     |
-+-------------------+     displays   |
-|     ComboItem     |<---------------+
-+-------------------+
-| - label           |
-| - value           |
-+-------------------+
+  +----------------------------+
+  |       CliSchemaParser      |
+  +----------------------------+
+  | - options                  |
+  +----------------------------+
+  | + initialize()             |
+  | + getOptionsForGroup()|     
+  | + getGroups()              |
+  +----------------------------+
 
-+-------------------+
-|   UserSettings    |
-+-------------------+
-| - storedValues    |
-| - configFile      |
-+-------------------+
-| + initialize()    |
-| + saveConfig()    |
-| + loadConfig()    |
-+-------------------+
+  +----------------------------+
+  |     CliOption              |
+  +----------------------------+
+  | - flags                    |
+  | - type                     |
+  | - defaultValue             |
+  +----------------------------+
 
-+-------------------+
-|   ShowMessages    |
-+-------------------+
-| + showValidationError()|
-+-------------------+
+  +----------------------------+
+  |     ComboItem              |
+  +----------------------------+
+  | - label                    |
+  | - value                    |
+  +----------------------------+
+
+  +----------------------------+
+  |   UserSettings             |
+  +----------------------------+
+  | - storedValues             |
+  | - configFile               |
+  +----------------------------+
+  | + initialize()             |
+  | + saveConfig()             |
+  | + loadConfig()             |
+  +----------------------------+
+
+  +----------------------------+
+  |       ShowMessages         |
+  +----------------------------+
+  | + showValidationError()    |
+  +----------------------------+
 
 ```
 
 ```text
-               +-----------------------------+
-               |         Launch App          |
-               +--------------+--------------+
-                              |
-                              v
-               +-----------------------------+
-               |     Load CLI Schema JSON    |
-               |    (From Crawlect Python)   |
-               +--------------+--------------+
-                              |
-                              v
-               +-----------------------------+
-               |        Initialize GUI       |
-               |  (MainWindow with options)  |
-               +--------------+--------------+
-                              |
-                              v
-               +-----------------------------+
-               |     User Selects Options    |
-               |    (Path, Output, Flags)    |
-               +--------------+--------------+
-                              |
-                              v
-               +-----------------------------+
-               |        User Selects         |
-               |          click Run          |
-               +--------------+--------------+
-                              |
-                              v
-               +-----------------------------+
-               |       Validate Inputs       |
-               |                             |
-               +--------------+--------------+
-                              |
-              +---------------+---------------+
-              |                               |
-           Invalid                          Valid
-              v                               v
- +-------------------------+     +-------------------------+
- |    Show Validation      |     |    Build Crawlect CLI   |
- |      Error Dialog       |     |       Command Args      |
- +-------------------------+     +------------+------------+
-                                              |
-                                              v
-                                 +-------------------------+
-                                 |    Check Output File    |
-                                 |   (Exists? Overwrite?)  |
-                                 +------------+------------+
-                                              |
-                    +-------------------------+-------------+
-                    |                         |             |
-                 Exists                   Overwrite     Exists Not
-                    v                         v             |
-          +-------------------+     +-------------------+   |
-          |   Prompt User to  |     |    Delete & Run   |   |
-          |   Change/Cancel   |     |                   |   |
-          +-------------------+     +---------+---------+   |
-                                              |             |
-                                              +-------------+
-                                              |
-                                              v
-                                    +-------------------+
-                                    |  Execute Crawlect |
-                                    |  Python CLI Call  |
-                                    +---------+---------+
-                                              |
-                                              v
-                                    +-------------------+
-                                    |      Process      |
-                                    |       Ends        |
-                                    +---------+---------+
-                                              |
-                                              v
-                                    +-------------------+
-                                    |   Display Result  |
-                                    |   in GUI Dialog   |
-                                    +---------+---------+
-                                              |
-                                              v
-                                    +-------------------+
-                                    |     Save User     |
-                                    |   Settings JSON   |
-                                    +---------+---------+
-                                              |
-                                              v
-                                    +-------------------+
-                                    |    Await Next     |
-                                    |    User Action    |
-                                    +-------------------+
+                   +-----------------------------+
+                   |         Launch App          |
+                   +--------------+--------------+
+                                  |
+                                  v
+                   +-----------------------------+
+                   |     Load CLI Schema JSON    |
+                   |    (From Crawlect Python)   |
+                   +--------------+--------------+
+                                  |
+                                  v
+                   +-----------------------------+
+                   |        Initialize GUI       |
+                   |  (MainWindow with options)  |
+                   +--------------+--------------+
+                                  |
+  +-------------------------------+
+  |                               |
+  |                               v
+  |                +-----------------------------+
+  |                |     User Selects Options    |
+  |                |    (Path, Output, Flags)    |
+  |                +--------------+--------------+
+  |                               |
+  |                               v
+  |                +-----------------------------+
+  |                |        User Selects         |
+  |                |          click Run          |
+  |                +--------------+--------------+
+  |                               |
+  |                               v
+  |                +-----------------------------+
+  |                |       Validate Inputs       |
+  |                |                             |
+  |                +--------------+--------------+
+  |                               |
+  |               +---------------+---------------+
+  |               |                               |
+  |            Invalid                          Valid
+  |               v                               v
+  |  +-------------------------+     +-------------------------+
+  |  |    Show Validation      |     |    Build Crawlect CLI   |
+  |  |      Error Dialog       |     |       Command Args      |
+  |  +------------+------------+     +------------+------------+
+  |               |                               |
+  +---------------+                               |
+  |                                               |
+  +---------------+                               |
+  |               |                               v
+  |  +------------+------------+     +-------------------------+
+  |  |      Prompt User to     |     |    Check Output File    |
+  |  |      Change/Cancel      |     |   (Exists? Overwrite?)  |
+  |  +-------------------------+     +------------+------------+
+  |               ^                               |
+  |               |                               |
+  |               +------------Exists-------------+-------------+
+  |                                               |             |
+  |                                           Overwrite     Exists Not
+  |                                               v             |
+  |                                     +-------------------+   |
+  |                                     |    Delete & Run   |   |
+  |                                     |                   |   |
+  |                                     +---------+---------+   |
+  |                                               |             |
+  |                                               +-------------+
+  |                                               |
+  |                                               v
+  |                                     +-------------------+
+  |                                     |  Execute Crawlect |
+  |                                     |  Python CLI Call  |
+  |                                     +---------+---------+
+  |                                               |
+  |                                               v
+  |                                     +-------------------+
+  |                                     |      Process      |
+  |                                     |       Ends        |
+  |                                     +---------+---------+
+  |                                               |
+  |                                               v
+  |                                     +-------------------+
+  |                                     |  Display Message  |
+  |                                     |   in GUI Dialog   |
+  |                                     +---------+---------+
+  |                                               |
+  |                                               v
+  |                                     +-------------------+
+  |                                     |     Save User     |
+  |                                     |   Settings JSON   |
+  |                                     +---------+---------+
+  |                                               |
+  |                                               v
+  |                                     +-------------------+
+  |                                     |    Await Next     |
+  |                                     |    User Action    |
+  |                                     +---------+---------+
+  |                                               |
+  +-----------------------------------------------+
 ```
 
 ## Roadmap & Crazy Ideas
 
 - Presets (lightweight `.json` configs per folder and/or global).
 - Embedded `.crawlectignore` editor.
-- Auto-setup venv and pip if Crawlect not found.
+- Auto-setup venv and Crawlect if not found.
 - Tabbed interface with progress bars.
 - Theme toggle (FlatLaf dark/light and/or OS setting level).
 - Output preview inside the GUI (Markdown).
