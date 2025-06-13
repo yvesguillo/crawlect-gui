@@ -185,11 +185,10 @@ public class MainWindow extends JFrame {
         int row = 0;
 
         for (CliOption option : groupOptions) {
-            String metalabel = (option.metavar != null) ? option.metavar : option.getPrimaryFlag();
-            JLabel label = new JLabel(String.format("%-20s", metalabel));
+            JLabel label = new JLabel(String.format("%-20s", option.getGuilabel()));
             label.setPreferredSize(new Dimension(160, 25));
             label.setFont(mainFont);
-            label.setToolTipText(option.help);
+            label.setToolTipText(option.getGuitooltip());
 
             JComponent inputField;
 
@@ -230,11 +229,11 @@ public class MainWindow extends JFrame {
 
                 JComponent displayComponent;
 
-                if (option.getPrimaryFlag().equals("--path")) {
+                if (option.getGuitype().equals("folderpath")) {
                     // File chooser helper buttons
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
-                    browse.setToolTipText("Select folder to scan");
+                    browse.setToolTipText(option.getGuitooltip());
                     browse.addActionListener(e -> MainController.getInstance().folderPathModifRequest(textField));
 
                     JPanel fileInputPanel = new JPanel(new BorderLayout());
@@ -242,11 +241,11 @@ public class MainWindow extends JFrame {
                     fileInputPanel.add(browse, BorderLayout.EAST);
                     displayComponent = fileInputPanel;
 
-                } else if (option.getPrimaryFlag().equals("--output")) {
+                } else if (option.getGuitype().equals("filepath")) {
                     // File chooser helper buttons
                     JButton browse = new JButton("📁");
                     browse.setMargin(new Insets(2, 4, 2, 4));
-                    browse.setToolTipText("Select output file path");
+                    browse.setToolTipText(option.getGuitooltip());
                     browse.addActionListener(e -> MainController.getInstance().filePathModifRequest(textField));
 
                     JPanel fileInputPanel = new JPanel(new BorderLayout());
@@ -254,9 +253,6 @@ public class MainWindow extends JFrame {
                     fileInputPanel.add(browse, BorderLayout.EAST);
                     displayComponent = fileInputPanel;
 
-                } else if (option.getPrimaryFlag().equals("--output-prefix") || option.getPrimaryFlag().equals("--output-suffix")) {
-                    // Skip these options for now
-                    continue;
                 } else {
                     displayComponent = textField;
                 }
@@ -265,7 +261,7 @@ public class MainWindow extends JFrame {
                 inputField = displayComponent;
             }
 
-            inputField.setToolTipText(option.help);
+            inputField.setToolTipText(option.getGuitooltip());
             inputField.setFont(mainFont);
 
             // Layout the label and input field side by side

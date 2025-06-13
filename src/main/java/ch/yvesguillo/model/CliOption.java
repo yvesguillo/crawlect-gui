@@ -21,6 +21,9 @@ public class CliOption {
     public boolean required;
     public String metavar;
     public String help;
+    public String guitype;
+    public String guilabel;
+    public String guitooltip;
 
     // Make Jackson maps the Python keyword `default` to this field.
     @JsonProperty("default")
@@ -82,6 +85,68 @@ public class CliOption {
                 .findFirst()
                 .orElse("");
     }
+
+    /**
+     * Returns the CLI parameter metavar or fallback.
+     * 
+     * @return String.
+     */
+    public String getMetavar() {
+        if (metavar.equals("")) {
+            String fallback = getPrimaryFlag();
+            return fallback;
+        }
+        return metavar;
+    }
+
+    /**
+     * Returns the CLI parameter help or fallback.
+     * 
+     * @return String.
+     */
+    public String getHelp() {
+        if (help.equals("")) {
+            String fallback = getPrimaryFlag();
+            return fallback;
+        }
+        return help;
+    }
+
+    /**
+     * Returns the CLI parameter guitype or fallback.
+     * 
+     * @return String.
+     */
+    public String getGuitype() {
+       return guitype;
+    }
+
+    /**
+     * Returns the CLI parameter guilabel or fallback.
+     * 
+     * @return String.
+     */
+    public String getGuilabel() {
+        if (guilabel.equals("")) {
+            String fallback = getMetavar();
+            return fallback;
+        }
+        return guilabel;
+    }
+
+    /**
+     * Returns the CLI parameter guitooltip or fallback.
+     * 
+     * @return String.
+     */
+    public String getGuitooltip() {
+        if (guitooltip.equals("")) {
+            String fallback = getHelp();
+            return fallback;
+        }
+        return guitooltip;
+    }
+
 
     // Adapt standard methodes.
 
