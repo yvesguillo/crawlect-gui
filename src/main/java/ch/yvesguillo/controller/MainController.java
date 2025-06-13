@@ -81,8 +81,8 @@ public class MainController {
      * Delegates the task of building CLI args, validation, execution, and result display.
      */
     public void runnRequest() {
-        CrawlectRunner.runCrawlectCommand(view.inputMap, view.storedValues, view);
         System.out.println("[Control] Scan requested");
+        CrawlectRunner.runCrawlectCommand(view.inputMap, view.storedValues, view);
     }
 
     /**
@@ -92,6 +92,8 @@ public class MainController {
      * @param field JTextField to be updated with the selected directory path.
      */
     public void folderPathModifRequest(JTextField field) {
+        System.out.println("[Control] Folder path modification requested");
+
         String folderPath = "";
         // Use default value as foldet path if exist.
         if (field.getText() != null && !field.getText().equals("")) folderPath = field.getText();
@@ -102,8 +104,6 @@ public class MainController {
         if (result == JFileChooser.APPROVE_OPTION) {
             field.setText(chooser.getSelectedFile().getAbsolutePath());
         }
-
-        System.out.println("[Control] Path modification requested");
     }
 
     /**
@@ -113,6 +113,8 @@ public class MainController {
      * @param field JTextField to be updated with the selected directory path.
      */
     public void filePathModifRequest(JTextField field) {
+        System.out.println("[Control] File path modification requested");
+
         JFileChooser chooser = new JFileChooser();
         String filePath = "";
         // Use default value as file path if exist.
@@ -123,7 +125,5 @@ public class MainController {
         if (result == JFileChooser.APPROVE_OPTION) {
             field.setText(chooser.getSelectedFile().getAbsolutePath());
         }
-
-        System.out.println("[Control] Path modification requested");
     }
 }
