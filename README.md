@@ -69,7 +69,7 @@ Crawlect-GUI is built in Java (Swing) and integrates seamlessly with your existi
   - [*Maven v3*](https://maven.apache.org/download.cgi)
   - [*Python v3*](https://www.python.org/downloads/)
   - [*Java v21+*](https://www.oracle.com/ch-de/java/technologies/downloads/#java21)
-  - [*Crawlect v1.0.5+*](https://pypi.org/project/Crawlect/) (`pip install crawlect`)
+  - [*Crawlect v1.0.6+*](https://pypi.org/project/Crawlect/) (`pip install crawlect`)
 
 ### Installation & Run
 
