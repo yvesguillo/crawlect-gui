@@ -254,7 +254,7 @@ src/
 
 ## Contributing
 Got ideas? Spot a bug? Wanna make this thing even cooler?  
-Feel free to fork, star, or open an issue — we’d love to hear from you!
+Feel free to fork, star, or [open an issue](https://github.com/yvesguillo/crawlect-gui/issues) — we’d love to hear from you!
 
 If you find Crawlect-GUI useful, **give it a ☆** to support the project!  
 [![GitHub Repo stars](https://img.shields.io/github/stars/yvesguillo/crawlect-gui?style=social)](#)
